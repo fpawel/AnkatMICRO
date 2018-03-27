@@ -89,7 +89,7 @@ let termoToolsPopup =
             "Введите значение уставки термокамеры"
             "Задать уставку термокамеры"
             String.tryParseDecimal
-            PartyWorks.TermoChamber.setSetpoint
+            PartyWorks.TermoChamber.setSetpoint 
     [   yield "Старт", fun _ _ -> PartyWorks.TermoChamber.start()
         yield "Стоп", fun _ _ -> PartyWorks.TermoChamber.stop()
         yield "Уставка", setpoint   ]

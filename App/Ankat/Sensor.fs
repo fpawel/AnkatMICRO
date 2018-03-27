@@ -88,12 +88,6 @@ type Sensor =
         | _ -> false
 
 
-//    static member gasGode = function
-//        | CH4   -> 5m
-//        | C3H8  -> 7m 
-//        | SumCH -> 6m
-//        | _     -> 4m
-
     static member units = function
         | CH4 | C3H8 | SumCH -> UnitsNkpr
         | _ -> UnitsVolume
@@ -118,7 +112,6 @@ type Sensor =
         | SumCH 
         | C3H8 ->     2.5m+0.05m * concValue
         | _ ->   0.2m + 0.05m * concValue
-        
 
 type ProductType =   
     {   TypeNumber : int

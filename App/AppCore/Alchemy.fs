@@ -31,9 +31,6 @@ let initKefsValues getPgsConc  prodType =
         
 [<AutoOpen>]
 module private PivateComputeProduct = 
-    let round6 (x:decimal) = System.Math.Round(x,6)
-    let tup2 = function [x;y] -> Some(x,y) | _ -> None
-    let tup3 = function [x;y;z] -> Some(x,y,z) | _ -> None
     
     type C = 
         | V of ProdDataPt * PhysVar
@@ -53,20 +50,6 @@ module private PivateComputeProduct =
             |> List.map ( Result.Unwrap.err  >> V)
             |> Err
     
-    let getKefsValues kefs p  = 
-        let oks, errs =
-            kefs |> List.map( fun k ->
-                match Product.getKef k p with 
-                | None ->  Err k
-                | Some value -> Ok (k,value) )
-            |> List.partition Result.isOk
-        if List.isEmpty errs then 
-            Ok ( oks |> List.map ( Result.Unwrap.ok >> snd) ) 
-        else 
-            errs 
-            |> List.map ( Result.Unwrap.err >> K )
-            |> Err
-
     let fmtErr<'a> (fmt : 'a -> string) = function
         | [x] -> sprintf "точке %A" (fmt x)
         | xs -> 
@@ -91,46 +74,7 @@ module private PivateComputeProduct =
                 |> sprintf "нет значений %s в точках %s" strCor )
 
     
-    let calculatePressureSensCoefs (p:Product) =
-        
-        [   PressSensPt PressNorm, Pmm
-            PressSensPt PressHigh, Pmm
-            PressSensPt PressNorm, VdatP
-            PressSensPt PressHigh, VdatP ]
-        |> getVarsValues p
-        |> fmtCorrErr ( fun (PressSensPt press) -> press.What) 
-        |> Result.bind (  fun [x0; x1; y0; y1] -> 
-            if x0 = x1 then
-                
-                sprintf """при расчёте коеффициентов компенсации давления  значения Pmm, снятые при нормальном и повышенном давлении, не должны быть равными! 
-                            Pmm[0] = %M, Pmm[1] = %M, VdatP[0] = %M, VdatP[1] = %M"""  x0 x1 y0 y1      
-                |> Err              
-            else  Ok (x0, x1, y0, y1) )
-        |> Result.map (  fun (x0, x1, y0, y1) -> 
-            let k0 = (y1-y0)/( x1 - x0 )
-            let k1 = y0 - x0*k0
-            Logging.info "%s : расчёт коэффициентов %A" p.What CorPressSens.Descr
-            Logging.info "k0 = (y1-y0)/( x1 - x0 )"
-            Logging.info "k1 = y0 - x0*k0"
-            Logging.info "x0 = %M, y0 = %M" x0 y0 
-            Logging.info "x1 = %M, y1 = %M" x1 y1 
-            Logging.info "k0 = %M, k1 = %M" k0 k1
-            
-            [ k0; k1 ] )
-        
-
     let getGaussXY p getPgsConc prodType  = function
-        | CorPressSens -> failwith "PressureSensCoefs is not for gauss!"
-        //| CorTermoPress ->
-        //    // [ Termo1, ch1.Tpp, Air; Termo1, ch1.Var1, Air ]
-        //    let xs var =
-        //        getVarsValues p (List.map( fun t -> TermoPressPt t, var) valuesListOf<TermoPt>)                
-        //    result {
-        //        let! temps = xs TppCh0
-        //        let! vars = xs VdatP
-        //        return List.zip temps vars }     
-        //    |> fmtCorrErr ( fun (TermoPressPt t) -> t.What)                      
-
         | CorLin n -> 
             let xs1 = 
                 match n, prodType.Sensor with
@@ -204,11 +148,8 @@ let compute group getPgsConc prodType = state {
         |> List.filter(fst >> groupCoefsSet.Contains)
         |> Product.setKefs 
     let result = 
-        match group with
-        | CorPressSens -> calculatePressureSensCoefs product
-        | _ ->
-            getGaussXY product  getPgsConc prodType group
-            |> Result.map (doValuesGaussXY group)
+        getGaussXY product  getPgsConc prodType group
+        |> Result.map (doValuesGaussXY group)
     match result with
     | Err e -> 
         Logging.error "%s : %s" (Product.what product) e
@@ -227,10 +168,10 @@ type ValueError =
 
 type Product with
 
-    static member concError sensor getPgsConc (n,testPt) product = 
-        Product.getVar (TestPt(n,testPt), n.Conc) product 
+    static member concError sensor getPgsConc (sensInd,scalePt,termoPt) product = 
+        Product.getVar (Test(sensInd,scalePt,termoPt), sensInd.Conc) product 
         |> Option.map(fun conc ->                 
-            let pgs = getPgsConc(testPt.ScalePt.Clapan n)
+            let pgs = getPgsConc(scalePt.Clapan sensInd)
             {   Value = conc
                 Nominal = pgs
                 Limit = Sensor.concErrorlimit sensor pgs  }  ) 
@@ -254,9 +195,7 @@ let createNewParty() =
     let products = [ product ]
     { h with ProductsSerials = [product.SerialNumber] }, { d with Products = products }
 
-let createNewParty1( name, productType, count) : Party.Content = 
-    let sensor1 = productType.Sensor
-                
+let createNewParty1( name, productType : ProductType, count) : Party.Content = 
     let products = 
         [1..count] 
         |> List.map( fun n ->  createNewProduct n productType.GetPgsConc productType )

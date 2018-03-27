@@ -120,47 +120,76 @@ module Termo =
             | Some t, Some setpoint -> Ok( (decimal t) / 10m, (decimal setpoint) / 10m )
             | _ -> Err "can't parse responsed temperature (2)"
 
+        type Req1<'a> = 
+            {   attemptNumber : int
+                request : Request
+                parse : string -> Result<'a,string>
+                isKeepRunning : unit -> bool
+            }
+            
+        let rec getResponse2<'a> (r:Req1<'a>) =   
+            let result =
+                getResponse1 r.request
+                |> Result.bind ( fun response ->                 
+                    r.parse response
+                    |> Result.mapErr( fun err ->                     
+                        sprintf "%s, %s" err <| formatError r.request response ) )
+            
+            match result with 
+            | Ok x -> Ok x 
+            | Err error ->
+                let repeatCount = cfg.Hardware.Termochamber.Comport.RepeatCount
+                if not (r.isKeepRunning()) || r.attemptNumber > repeatCount then 
+                    Err error 
+                else 
+                    Logging.warn "термокамера : %s" error 
+                    Logging.warn "термокамера : повтор запроса: %d из %d" (r.attemptNumber + 1)  repeatCount
+                    getResponse2 {r with attemptNumber = r.attemptNumber + 1}
 
-
-        let getResponse2<'a> request (parse : string -> Result<'a,string>) = 
-            getResponse1 request
-            |> Result.bind ( fun response -> 
-                parse response
-                |> Result.mapErr( fun err ->                     
-                    sprintf "%s, %s" err <| formatError request response ) )
-
-    let read() = 
-        let r = getResponse2 Read parseTemperature
+    let read isKeepRunning = 
+        let r = 
+            getResponse2 
+                {   attemptNumber = 0
+                    request = Read
+                    parse = parseTemperature
+                    isKeepRunning = isKeepRunning
+                }
         temperature.Value <- Some r
         
         match r with
         | Ok (x,y) -> sprintf "%M (%M)" x y, None
         | Err e -> "Ошибка", Some e
-        |> MainWindow.HardwareInfo.termo.setTextSafe (Logging.resultToLevel r)
+        |> MainWindow.HardwareInfo.termo.setTextSafe (Logging.fromResult r)
 
         r
 
-    let write newstate = 
-        let r = getResponse2 (Write newstate) checkWriteResponse
+    let write isKeepRunning newstate = 
+        let r = 
+            getResponse2
+                {   attemptNumber = 0
+                    request = Write newstate
+                    parse = checkWriteResponse
+                    isKeepRunning = isKeepRunning
+                }
         let r1 = Result.map(fun _ -> newstate ) r
         state.Value <- Some r1
 
         match r with
         | Ok () -> newstate.What, None
         | Err e -> "Ошибка", Some e
-        |> MainWindow.HardwareInfo.termo.setTextSafe (Logging.resultToLevel r)
+        |> MainWindow.HardwareInfo.termo.setTextSafe (Logging.fromResult r)
 
         r
 
-    let start() = write Start
+    let start isKeepRunning = write isKeepRunning Start
 
-    let stop() = write Stop
+    let stop isKeepRunning = write isKeepRunning Stop
 
-    let setSetpoint setpoint = result {
+    let setSetpoint isKeepRunning setpoint = result {
         Logging.info "Уставка термокамеры %M" setpoint
-        do! stop()
-        do! write (Setpoint setpoint)
-        return! start() }
+        do! stop isKeepRunning
+        do! write isKeepRunning (Setpoint setpoint)
+        return! start isKeepRunning }
    
 module Warm =
     
@@ -171,7 +200,7 @@ module Warm =
     let rec private loopWarm s isKeepRunning work = result {
     
         if (not <| isKeepRunning()) then return! Err "прервано" else
-        let! (temperature,setPointTemperature) = Termo.read()
+        let! (temperature,setPointTemperature) = Termo.read isKeepRunning
         if abs( s.destT - temperature ) < cfg.Hardware.Termochamber.TermoWarmError then
             return temperature 
         else
@@ -184,7 +213,7 @@ module Warm =
     let warm destTemperature isKeepRunning work = 
         result {
             Logging.info "Начало прогрева %M\"C" destTemperature
-            do! Termo.setSetpoint destTemperature
+            do! Termo.setSetpoint isKeepRunning destTemperature 
             let! resTemp = loopWarm {destT = destTemperature; startTime = DateTime.Now} isKeepRunning work        
             Logging.info "Прогрев %M\"C завершён с температурой %M\"C" destTemperature resTemp 
             return () } 

@@ -5,9 +5,8 @@ open System.Windows.Forms
 open System.Drawing
 
 open MainWindow
-
-let updateGridViewBinding() = 
-    MyWinForms.Utils.GridView.updateBinding gridScenary
+open Ankat.ViewModel.Operations
+open Ankat
 
 
 [<AutoOpen>]
@@ -33,7 +32,7 @@ module private Popup =
             ( fun () -> Some () )
             ( fun () ->
                 party.Journal <- Map.empty 
-                updateGridViewBinding() )
+                treeListViewScenary.RebuildAll true )
 
     let delayTime() = 
         let d = Ankat.ViewModel.DelaysHelperViewModel ()
@@ -47,91 +46,119 @@ module private Popup =
 
 module private SelectedOperation = 
 
-    let get() = 
-        let xs = gridScenary.SelectedCells
-        if xs.Count=0 then None else
-        let x = xs.[0]
-        try
-            x.OwningRow.DataBoundItem 
-            :?> Ankat.ViewModel.Operations.RunOperationInfo 
-            |> Some
-        with e ->
-            Logging.debug "error Ankat.View.Scenary.SelectedOperation.get! %A" e
-            None
+    let get() =
+        let selectedItem = MainWindow.form.PerformThreadSafeAction ( fun () -> treeListViewScenary.SelectedItem)
+        if selectedItem = null then None else
+        match selectedItem.RowObject with
+        | :? Operation as x -> Some x
+        | _ -> None
 
     let showLoggigng() = 
         get()
         |> Option.iter(fun x -> 
-            LoggingHtml.set webbJournal x.Operation.FullName x.Operation.RunInfo.LoggingRecords )
+            LoggingRichText.setLogging loggingJournal x.RunInfo.LoggingRecords )
 
     
 
     
 let initialize =
-    gridScenary.DataSource <- Thread2.operations 
-    gridScenary.SelectionChanged.Add <| fun _ ->
+    treeListViewScenary.CanExpandGetter <- fun x -> 
+        match x with
+        | :? Operation as x -> 
+            match x with
+            | Scenary _ -> true
+            | _ -> false
+        | _ -> false
+
+    treeListViewScenary.ChildrenGetter <- fun x ->
+        let xs = 
+            match x with
+            | :? Operation as x -> x.Children 
+            | _ -> [] 
+        xs :> Collections.IEnumerable
+    
+    treeListViewScenary.SelectionChanged.Add <| fun _ ->
         SelectedOperation.showLoggigng()
 
-    let rec h = EventHandler( fun _ _ -> 
-        if gridScenary.RowCount > 0 then
-            gridScenary.CurrentCell <- null
-            gridScenary.CurrentCell <- gridScenary.Rows.[0].Cells.[0]
-        form.Activated.RemoveHandler h )
-    form.Activated.AddHandler h
+    ScenaryColumn.name.AspectGetter <- fun x -> 
+        match x with
+        | :? Operation as x -> box x.Name 
+        | _ -> null
 
-    gridScenary.DataBindingComplete.Add <| fun _ ->
-        if gridScenary.RowCount > 0 then
-            gridScenary.CurrentCell <- gridScenary.Rows.[0].Cells.[0]
+    ScenaryColumn.status.AspectGetter <- fun x -> 
+        match x with
+        | :? Operation as x -> box x.RunInfo.Status 
+        | _ -> null
+
+    ScenaryColumn.time.AspectGetter <- fun x -> 
+        match x with
+        | :? Operation as x -> box x.RunInfo.DelayTime
+        | _ -> null
+
+    // при изменении сценария изменить treeListViewScenary
+    Thread2.scenary.AddChanged <| fun (_,x) -> 
+        treeListViewScenary.SetObjects ([x] :> Collections.IEnumerable)
+        treeListViewScenary.CheckedObjectsEnumerable <- ([x] :> Collections.IEnumerable)
+
+        LoggingRichText.setLogging loggingJournal x.RunInfo.LoggingRecords
+        treeListViewScenary.ExpandAll()
+
+    Thread2.scenary.Set (PartyWorks.production())
 
     party.OnAddLogging.Add <| fun (operation, level,text) ->
         SelectedOperation.get()
-        |> Option.iter( fun op -> 
-            
-            let xs = Ankat.ViewModel.Operations.Operation.tree op.Operation
+        |> Option.iter( fun op ->             
+            let xs = Operation.tree op
             if xs |> List.exists( fun o -> o.FullName = operation) then
-                webbJournal.PerformThreadSafeAction <| fun () -> 
-                    LoggingHtml.addRecord webbJournal level text )
+                loggingJournal.PerformThreadSafeAction <| fun () -> 
+                    LoggingRichText.addRecord loggingJournal level text )
 
     Thread2.PerfomOperationEvent.Add <| function
         | operation,true ->
             match SelectedOperation.get() with            
-            | Some op when op.Operation.FullName = operation.FullName -> 
-                webbJournal.PerformThreadSafeAction <| fun () ->
-                    
-                    LoggingHtml.set webbJournal operation.FullName []
+            | Some op when op.FullName = operation.FullName -> 
+                loggingJournal.PerformThreadSafeAction <| fun () ->
+                    loggingJournal.Text <- ""                   
             | _ -> ()
         | _ -> ()
 
-    gridScenary.Columns.AddRange            
-        [|  %% new TextColumn(DataPropertyName = "Name", HeaderText = "Операция")
-            %% new TextColumn(DataPropertyName = "Delaytime", HeaderText = "Задержка") 
-            %% new TextColumn(DataPropertyName = "Status", HeaderText = "Статус") |]
-    gridScenary.CellFormatting.Add <| fun e ->
-        let row = gridScenary.Rows.[e.RowIndex]
-        let col = gridScenary.Columns.[e.ColumnIndex]        
-        let cell = row.Cells.[e.ColumnIndex]
-        let i = row.DataBoundItem :?> Ankat.ViewModel.Operations.RunOperationInfo
+    treeListViewScenary.FormatRow.Add(fun e -> 
+        let x = e.Model :?> Operation
+        let apply a b c d =
+            e.Item.BackColor <- a
+            e.Item.ForeColor <- b
+            e.Item.SelectedBackColor <- Nullable c
+            e.Item.SelectedForeColor <- Nullable d
+        if x.RunInfo.WasPerformed then
+            apply Color.Bisque Color.Black SystemColors.HighlightText SystemColors.Highlight
+        if x.RunInfo.HasErrors then
+            apply Color.LightGray Color.Red Color.MidnightBlue Color.Yellow
+        if x.RunInfo.IsPerforming then
+            apply Color.Aquamarine Color.Black SystemColors.HighlightText SystemColors.Highlight)
 
-        let x = e.CellStyle
-            
-        if i.WasPerformed then
-            x.SelectionForeColor <- SystemColors.HighlightText
-            x.SelectionBackColor <- SystemColors.Highlight
-            x.ForeColor <- Color.Black
-            x.BackColor <- Color.Bisque
+    let cellEditStarting (e:BrightIdeasSoftware.CellEditEventArgs) =
+        match e.RowObject :?> Operation with
+        | Timed _ as x ->
+            let mutable rect = e.Control.Bounds
+            let offset = 
+                match x.RunInfo.Level with
+                | 1 -> -30
+                | 2 -> -40
+                | 3 -> -65
+                | n -> -20 * n
+            rect.Offset(offset,0)
+            rect.Width <- max 100 rect.Width
+            e.Control.Bounds <- rect
+        | _ -> e.Cancel <- true
+    treeListViewScenary.CellEditStarting.Add cellEditStarting
 
-        if i.HasErrors then                
-            x.SelectionForeColor <- Color.Yellow
-            x.SelectionBackColor <- Color.MidnightBlue 
-            x.ForeColor <- Color.Red  
-            x.BackColor <- Color.LightGray 
-
-        if i.IsPerforming then 
-            x.SelectionForeColor <- SystemColors.HighlightText
-            x.SelectionBackColor <- SystemColors.Highlight
-            x.ForeColor <- Color.Black
-            x.BackColor <- Color.Aquamarine
-        e.FormattingApplied <- true
+    let сellEditFinishing (e:BrightIdeasSoftware.CellEditEventArgs) =
+        match e.RowObject :?> Operation with
+        | Timed _ as x ->
+            x.RunInfo.DelayTime <- string e.NewValue
+            treeListViewScenary.RefreshItem(e.ListViewItem)
+        | _ -> ()
+    treeListViewScenary.CellEditFinishing.Add сellEditFinishing
 
     let _ = new Panel( Parent = TabsheetScenary.BottomTab, Dock = DockStyle.Top, Height = 3)
     let b = new Button( Parent = TabsheetScenary.BottomTab, Dock = DockStyle.Top, 

@@ -54,13 +54,9 @@ module Name =
             
             | TermoScalePt (Sens n, ScaleEdge1 gas, T t) -> 
                 sprintf "TermoScalePt(%s, %s, %s)" n gas t  
-
-            | TermoPressPt (T t) -> sprintf "TermoPressPt(%s)" t
-
-            | PressSensPt (P p) -> sprintf "PressSensPt(%s)" p
-
-            | TestPt (Sens n, testPt) -> 
-                sprintf "TestPt(%s, %A)" n testPt
+                
+            | Test (Sens n, scalePt, termoPt) -> 
+                sprintf "Test(%s, %A, %A)" n scalePt termoPt
         
         sprintf "%s, %s" str1 y
 
@@ -88,10 +84,11 @@ type Product(p, getProdType, getPgs, partyId) =
         with get () = x.getVarUi (%s)
         and set value = x.setVarUi (%s) value"""  (Prop.dataPoint k) (Name.dataPoint k) (Name.dataPoint k)
         
-    for testPt in TestPt.valuesList do
-        for sensN in SensorIndex.valuesList do
-            yield sprintf """
-    member x.%s = x.GetConcError (%A,%A)"""  (Prop.concError (sensN,testPt) ) sensN testPt 
+    for sensN in SensorIndex.valuesList do
+        for scalePt in ScalePt.valuesList do
+            for termoPt in TermoPt.valuesList do
+                yield sprintf """
+    member x.%s = x.GetConcError (%A,%A,%A)"""  (Prop.concError (sensN,scalePt, termoPt) ) sensN scalePt termoPt
        
     
     for x in PhysVar.valuesList do        

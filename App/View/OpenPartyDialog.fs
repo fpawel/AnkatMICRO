@@ -188,7 +188,6 @@ module private Helpers =
                 match AppContent.load b.Id with
                 | None -> 
                     Thread2.scenary.Set <| PartyWorks.production() 
-                    Scenary.updateGridViewBinding()                    
                     TabPages.TabChart.update()                    
                 | Some error -> 
                     MessageBox.Show(sprintf "Не удалось открыть данные партии %A, %A. %s" 

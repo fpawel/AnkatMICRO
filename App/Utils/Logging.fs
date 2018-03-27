@@ -67,5 +67,6 @@ let backColor = function
     | Debug -> Color.White
     | Warn -> Color.White
 
-
-
+let fromResult = function
+    | Ok _ -> Info
+    | Err _ -> Error

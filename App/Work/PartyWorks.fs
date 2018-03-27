@@ -8,6 +8,7 @@ open Pneumo
 
 open ViewModel.Operations
 open Logging
+open Utils.Result.Unwrap
 
 [<AutoOpen>]
 module private Helpers = 
@@ -80,21 +81,23 @@ type Ankat.ViewModel.Product1 with
             let _ = x.ReadModbus( ReadVar var)
             () }
 
-    member private p.calculateTestConc sensor (n, testPt:TestPt) conc = 
-        let concErrorlimit = Sensor.concErrorlimit sensor conc
-        let pgs = party.GetPgs (testPt.ScalePt.Clapan n)
-        let d = abs(conc - pgs)
-        Logging.write 
-            (if d < concErrorlimit then Logging.Info else Logging.Error)
-            "%s, проверка погрешности %s=%M - конц.=%M, погр.=%M, макс.погр.=%M" 
-                p.What n.What pgs conc d concErrorlimit  
-        
+    member p.PerformTestConc sensor sensInd scalePt termoPt conc = 
+        Logging.info "Выполняется считывание данных для расчёта погрешности прибора %s: %A, %A, %A, %A" p.What sensor sensInd scalePt termoPt
+        match p.ReadModbus( ReadVar <| SensorIndex.conc sensInd ) with
+        | Err err->  Logging.error "Не удалось считать концентрацию: %s" err
+        | Ok conc  ->
+            match p.ReadModbus( ReadVar <| SensorIndex.termo sensInd ) with
+            | Err err->  Logging.error "Не удалось считать температуру пироприёмника: %s" err
+            | Ok temp ->
+                 p.setVar (Test (sensInd, scalePt, termoPt), SensorIndex.conc sensInd) (Some conc)
+                 p.setVar (Test (sensInd, scalePt, termoPt), SensorIndex.termo sensInd) (Some temp)
+                 match p.GetConcError(sensInd, scalePt, termoPt) with
+                 | None -> Logging.info "Погрешность не была расчитана" 
+                 | Some ve ->
+                    (if ve.IsError then Logging.error else Logging.info) "Погрешность: %A" ve
             
-    member p.TestConc sensor (n,_ as pt) = maybeErr{
-        let concVar = SensorIndex.conc n
-        let! conc = p.ReadModbus( ReadVar concVar )
-        p.setVar (TestPt pt, concVar) (Some conc)
-        p.calculateTestConc sensor pt conc }
+        
+        
 
     member p.FixProdData prods = 
         let physVars = 
@@ -333,13 +336,10 @@ module private Helpers1 =
     
 
     let blowAir() = 
-        "Продувка воздухом" <||> [   
-            blow 1 Gas1 "Продуть воздух"
+        "Продувка азотом" <||> [   
+            blow 1 Gas1 "Продуть азот"
             "Закрыть пневмоблок" <|> fun () -> switchPneumo None
         ]
-
-    let formatIsSens2() = 
-        if isSens2() then "к.1,2" else "к.1"
 
     let adjust() =
         "Калибровка" <||> [   
@@ -348,9 +348,7 @@ module private Helpers1 =
             if isSens2() then
                 yield adjustSens Sens2
             yield blowAir()]
-
-    let goNku = "Установка НКУ" <|> fun () -> warm TermoNorm
-
+            
     let norming() = 
         ("Нормировка", TimeSpan.FromMinutes 1., BlowDelay Gas1) <-|-> fun gettime -> maybeErr{            
             do! switchPneumo <| Some Gas1
@@ -369,6 +367,11 @@ module private Helpers1 =
                 TimeSpan.FromHours 1., WarmDelay temperature) <-|-> fun gettime -> maybeErr{    
                 do! switchPneumo None   
                 do! Delay.perform ( "Выдержка термокамеры " + strT ) gettime true } ]
+
+    let stopTermo() =
+        "Остановка термлкамеры" <|> fun ()  ->
+            Hardware.Termo.stop isKeepRunning
+                |> Result.someErr
 
     
     let fixProdData prods =
@@ -392,21 +395,27 @@ module private Helpers1 =
                         |> List.map f  
                         |> fixProdData    ] ]
 
-    let test1 (n:SensorIndex)  = 
-        n.What <||> 
-            (   TestPt.valuesList  |> List.map( fun testPt -> 
-                    sprintf "%s" testPt.What <||> [ 
-                        blow 3 (testPt.ScalePt.Clapan n) "Продувка"
-                        fixProdData [ TestPt(n, testPt) ]
-                    ] ) )
+    let fixSensConcError sensInd temp = 
+        (SensorIndex.what sensInd) <||> 
+            [   for scalePt in ScalePt.valuesList do 
+                    yield blow 3 (scalePt.Clapan sensInd) "Продувка"
+                    yield fixProdData [ Test(sensInd, scalePt, temp) ] 
+            ]
 
-    let test() = 
-        "Снятие основной погрешности" <||> [   
-            yield adjust()             
-            yield test1 Sens1
-            if isSens2() then
-                yield test1 Sens2
-            yield blowAir() ]
+    let fixConcError() = 
+        "Снятие погрешности"  <||>
+            [   for temp in [TermoNorm; TermoLow; TermoHigh] do
+                    yield temp.What <||>
+                        [   yield setupTermo temp
+                            yield fixSensConcError Sens1 TermoNorm
+                            if isSens2() then
+                                yield fixSensConcError Sens2 TermoNorm                
+                            yield blowAir()
+                        ]
+                    yield stopTermo()
+            ]
+
+        
 
     let lin() = 
         let points = [   
@@ -428,7 +437,7 @@ module private Helpers1 =
             yield blowAir()
             yield computeAndWriteGroup <| CorLin Sens1
             if isSens2() then
-                yield computeAndWriteGroup <| CorLin Sens2 ]
+                yield computeAndWriteGroup <| CorLin Sens2  ]
 
     let termo() =
         let points t = [   
@@ -454,16 +463,7 @@ module private Helpers1 =
             yield blowAir()   ]
 
 
-    let press() = 
-        "Компенсация давления"  <||>  [
-            blowAir()
-            "Нормальное" <|> fun () -> 
-                ModalMessage.show Logging.Info "Компенсация давления" "Установите нормальное давление"
-                party.FixProdData [PressSensPt PressNorm] 
-            "Повышенное" <|> fun () -> 
-                ModalMessage.show Logging.Info "Компенсация давления" "Установите повышенное давление"
-                party.FixProdData [PressSensPt PressHigh] 
-            computeAndWriteGroup <| CorPressSens ]
+    
 
     let initCoefs() =         
         "Установка к-тов исплнения" <|> fun () -> 
@@ -474,16 +474,15 @@ module private Helpers1 =
 let production() = 
    
     (if isSens2() then "2K" else "1K") <||> [
+        setupTermo TermoNorm
         "Установка режима работы" <|> fun _ ->
             party.SetWorkMode 2
         initCoefs()
-        goNku
         norming()
         adjust()
         lin()
         termo()
-        press()
-        test() ]
+        fixConcError() ]
 
 
 module Works =
@@ -560,11 +559,13 @@ module TermoChamber =
         s -->> fun () ->
             f () |> Result.someErr
 
-    let start() = "Старт" -->> Hardware.Termo.start
-    let stop() = "Стоп" -->> Hardware.Termo.stop
+    let start() = "Старт" -->> fun() -> 
+        Hardware.Termo.start isKeepRunning
+    let stop() = "Стоп" -->> fun() -> 
+        Hardware.Termo.stop isKeepRunning
     let setSetpoint value = "Уставка" -->> fun () -> 
-        Hardware.Termo.setSetpoint value
+        Hardware.Termo.setSetpoint isKeepRunning value
     let read () = "Замер" -->> fun () -> 
-        let r = Hardware.Termo.read ()
+        let r = Hardware.Termo.read isKeepRunning
         Logging.write (Logging.resultToLevel r) "%A" r
         Result.map (fun _ -> () ) r

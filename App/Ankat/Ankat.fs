@@ -67,8 +67,6 @@ type ScaleEdgePt =
         | Sens2, ScaleEnd -> S2Gas3
 
     member x.Clapan n = ScaleEdgePt.clapan (n,x)
-    
-
 
 // точка шкалы концентрации
 type ScalePt = 
@@ -226,6 +224,7 @@ type Command =
             CmdSetAddr ]
 
 
+
 // индекс датчика измерения концентрации
 type SensorIndex with
 
@@ -302,63 +301,26 @@ type LinPt =
         | Sens2, Lin3 -> failwith "ClapanHelp.clapanOflinPt, there is no Lin3 for Sens2"
         | Sens2, Lin4 -> S2Gas3
 
-// точка проверки концентрации
-type TestPt =
-    | Test1Gas1
-    | Test2Gas2
-    | Test3Gas3
-    | Test4Gas2
-    | Test5Gas1
-    | Test6Gas3
-    
-    member x.ScalePt = TestPt.GetScalePt x
-
-    static member GetScalePt = function
-        | Test1Gas1 -> ScaleEdge ScaleBeg
-        | Test2Gas2 -> ScaleMid
-        | Test3Gas3 -> ScaleEdge ScaleEnd
-        | Test4Gas2 -> ScaleMid
-        | Test5Gas1 -> ScaleEdge ScaleBeg
-        | Test6Gas3 -> ScaleEdge ScaleEnd
-
-    
-
-module private TestPtHelp = 
-    let valuesList = 
-        FSharpType.valuesListOf<TestPt>
-
-type TestPt with 
-    static member valuesList = TestPtHelp.valuesList
-
-    member x.What = 
-        sprintf "%d:%s" (valueOrderOf x + 1) x.ScalePt.What
-
-    static member what (x:TestPt) = 
-        x.What
-
-
 // точка снятия данных
 type ProdDataPt =
     | LinPt of SensorIndex * LinPt
     | TermoScalePt of SensorIndex * ScaleEdgePt * TermoPt
     //| TermoPressPt of TermoPt 
-    | PressSensPt of PressPt
-    | TestPt of SensorIndex * TestPt
+    | Test of SensorIndex * ScalePt * TermoPt
 
     static member physVars = function
         | LinPt (n,_) -> [n.Conc]
         | TermoScalePt (n,_,_) -> [n.Termo; n.Var1]
         //| TermoPressPt _ -> [TppCh0;VdatP]
-        | PressSensPt _ -> [Pmm;VdatP]
-        | TestPt (n,_) -> [n.Termo; n.Conc]
+        | Test (n,_,_) -> [n.Termo; n.Conc]
 
     static member what = function
         | LinPt (n,m) -> sprintf "LIN%d_%d" (valueOrderOf n) (valueOrderOf m )
         | TermoScalePt (n,ScaleBeg,t) -> sprintf "T0%d_%d" (valueOrderOf n) (valueOrderOf t )
         | TermoScalePt (n,ScaleEnd,t) -> sprintf "TK%d_%d" (valueOrderOf n) (valueOrderOf t )
         //| TermoPressPt t -> sprintf "PT%d" (valueOrderOf t )
-        | PressSensPt p -> sprintf "PS%d" (valueOrderOf p )
-        | TestPt (n,pt) -> sprintf "Test%d_%d" (valueOrderOf n) (valueOrderOf pt)
+        | Test (sensInd,scalePt, termoPt) -> sprintf "Test%d_%d_%d" (valueOrderOf sensInd) (valueOrderOf scalePt) (valueOrderOf termoPt)
+        
 
 [<AutoOpen>]
 module private Helper = 
@@ -378,15 +340,10 @@ module private Helper =
                     for t in TermoPt.valuesList do
                         yield TermoScalePt(s, pgs, t)
             
-            //for t in TermoPt.valuesList do
-            //    yield TermoPressPt(t)
-            
-            for p in PressPt.valuesList do
-                yield PressSensPt(p)
-            
-            for s in SensorIndex.valuesList do
-                for pt in TestPt.valuesList do
-                    yield TestPt(s, pt)
+            for sensInd in SensorIndex.valuesList do
+                for scalePt in ScalePt.valuesList do
+                    for termoPt in TermoPt.valuesList do
+                        yield Test(sensInd, scalePt, termoPt)
         ]
 
 type ProdDataPt with
@@ -396,9 +353,7 @@ type ProdDataPt with
 type Correction = 
     | CorLin of SensorIndex
     | CorTermoScale of SensorIndex * ScaleEdgePt
-    //| CorTermoPress
-    | CorPressSens
-
+    
     static member physVars = 
         Correction.prodDataPts 
         >> List.map ProdDataPt.physVars
@@ -413,8 +368,6 @@ type Correction =
         | CorLin n -> sprintf "LIN%d" (valueOrderOf n) 
         | CorTermoScale (n,ScaleBeg) -> sprintf "T0%d" (valueOrderOf n) 
         | CorTermoScale (n,ScaleEnd) -> sprintf "TK%d" (valueOrderOf n) 
-        //| CorTermoPress -> "PT"
-        | CorPressSens -> "PS"
         
 
     static member descr = function
@@ -423,8 +376,7 @@ type Correction =
             sprintf "Компенсация влияния темпемпературы на нулевые показания канала %d" n.N
         | CorTermoScale (n,ScaleEnd) -> 
             sprintf "Компенсация влияния темпемпературы на чувствительность канала %d" n.N
-        //| CorTermoPress -> "Компенсация влияния темпемпературы на давление"
-        | CorPressSens -> "Компенсация влияния давления на чувствительность"
+        
 
     static member coefs = function
         | CorLin Sens1 -> 
@@ -444,26 +396,16 @@ type Correction =
         
         | CorTermoScale (Sens2,ScaleEnd) -> 
             [KSens_T2_0; KSens_T2_1; KSens_T2_2]
-        
-        //| CorTermoPress  ->
-        //    [KNull_TP_0; KNull_TP_1; KNull_TP_2]
-
-        | CorPressSens -> 
-            [Coef_Pmmhg_0; Coef_Pmmhg_1]
-
+      
     static member fromProdDataPt = function
         | LinPt (n,_) -> Some ( CorLin n )
         | TermoScalePt (n,gas,_) -> Some ( CorTermoScale(n,gas) )
-        //| TermoPressPt _ -> Some CorTermoPress
-        | PressSensPt _ -> Some CorPressSens
-        | TestPt _ -> None
+        | Test _ -> None
 
     static member prodDataPts = function
         | CorLin n -> List.map ( fun z ->  LinPt (n,z) )  LinPt.valuesList 
         | CorTermoScale (n,gas) -> List.map ( fun z ->  TermoScalePt (n,gas, z) ) TermoPt.valuesList
-        //| CorTermoPress -> List.map TermoPressPt TermoPt.valuesList
-        | CorPressSens -> List.map PressSensPt PressPt.valuesList
-
+        
 type GetPgsConcFun = SensorIndex -> ScaleEdgePt -> decimal
 
 [<AutoOpen>]
@@ -475,17 +417,12 @@ module private Helper1 =
             
             for s in SensorIndex.valuesList do
                 for pgs in ScaleEdgePt.valuesList do
-                    yield CorTermoScale(s, pgs)
-            
-            //yield CorTermoPress
-            yield CorPressSens ]
+                    yield CorTermoScale(s, pgs)  ]
 
 
     let (|CorrectionOfProdDataPt|_|) = Correction.fromProdDataPt
 
 module Points = 
-
-    open Pneumo
 
     let sens_gas_t = listOf{ 
         let! n = SensorIndex.valuesList
@@ -653,24 +590,31 @@ type Product =
         let sm = if m<10uy then sprintf "0%d" m else m.ToString()
         sprintf "%s.%d" sm (2000 + int y)
 
-    static member concErrorlimit sensor sensorIndex pgsConc testPt product =
-        let concVar = SensorIndex.conc sensorIndex
-        let f = TestPt(sensorIndex,testPt)
-        if not <| Sensor.isCH sensor then      
-               
-            let tempVar = SensorIndex.termo sensorIndex
-            ( Product.getVar (f,concVar) product, 
-                Product.getVar (f,tempVar) product) 
-            |> Option.map2(fun(c,t) -> 
-                let dt = t - 20m     
-                let maxc = sensor.ConcErrorlimit pgsConc
-                0.5m * abs( maxc*dt ) / 10.0m )
-        else
-            match testPt.ScalePt with
-            | ScaleEdge ScaleBeg -> Some 5m
-            | _ ->
-                Product.getVar (f,concVar) product
-                |> Option.map(fun conc20 -> conc20 * 0.15m |> abs  |> decimal )
+    static member concErrorlimit (sensor:Sensor) sensInd scalePt termoPt pgsConc product =
+        let concVar = SensorIndex.conc sensInd
+        let test = Test(sensInd, scalePt, termoPt)
+        let tempVar = SensorIndex.termo sensInd
+        let temp = Product.getVar (test,tempVar) product
+        let sensorConcErrorLimit = sensor.ConcErrorlimit pgsConc
+
+        match termoPt with 
+        | TermoNorm -> Some sensorConcErrorLimit
+        | _ ->
+            if Sensor.isCH sensor then     
+            
+                let conc20 = Product.getVar (Test(sensInd, scalePt, TermoNorm),concVar) product
+                match scalePt, conc20 with
+                | ScaleEdge ScaleBeg, _ -> Some 5m
+                | _, Some conc20 ->
+                    conc20 * 0.15m |> abs  |> decimal |> Some
+                | _ -> None
+            else
+                temp |> Option.map(fun temp -> 
+                    let dt = temp - 20m     
+                    0.5m * abs( sensorConcErrorLimit*dt ) / 10.0m  
+                    )
+            
+                
 
 type LoggingRecord = DateTime * Logging.Level * string
 
@@ -738,8 +682,10 @@ module Prop =
         | TermoHigh -> "H"
         | TermoLow -> "L"
         
-    let concError (n : SensorIndex, testPt:TestPt) = 
-        sprintf "ConcError%d_%d" (valueOrderOf n) (valueOrderOf testPt)
+    let concError (n : SensorIndex, scalePt:ScalePt, tempPt: TermoPt) = 
+        sprintf "ConcError%d_%d_%d" (valueOrderOf n) (valueOrderOf scalePt) (valueOrderOf tempPt)
+
+        
 
     let physVar (x : PhysVar) = 
         x.What
@@ -748,9 +694,8 @@ module Prop =
         | LinPt (n,m) -> sprintf "LIN%d_%d" (valueOrderOf n) (valueOrderOf m )
         | TermoScalePt (n,ScaleBeg,t) -> sprintf "T0%d_%d" (valueOrderOf n) (valueOrderOf t )
         | TermoScalePt (n,ScaleEnd,t) -> sprintf "TK%d_%d" (valueOrderOf n) (valueOrderOf t )
-        //| TermoPressPt t -> sprintf "PT%d" (valueOrderOf t )
-        | PressSensPt p -> sprintf "PS%d" (valueOrderOf p )
-        | TestPt (n,testPt) -> sprintf "TEST%d_%d" (valueOrderOf n) (valueOrderOf testPt)
+        | Test (n,scalePt, termoPt) -> sprintf "TEST%d_%d_%d" (valueOrderOf n) (valueOrderOf scalePt) (valueOrderOf termoPt)
+        
 
     let dataPoint (x, y  : PhysVar) = 
         sprintf "Var_%s_%s" (prodData x) y.What

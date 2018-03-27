@@ -22,20 +22,19 @@ module TabsheetVars =
     type Page = 
         | Lin of SensorIndex
         | T of SensorIndex * ScaleEdgePt
-        | PS
-        | Test of SensorIndex
+        | PTest of SensorIndex 
+       
 
         static member what = function
             | Lin n ->      Correction.what <| CorLin n                
             | T (n,gas) ->  Correction.what <| CorTermoScale (n,gas)                
-            | PS ->         Correction.what <| CorPressSens                
-            | Test n ->     "Проверка " + n.What
+            | PTest (n) ->     "Проверка " + n.What 
 
         static member descr = function
             | Lin n ->      Correction.descr <| CorLin n                
             | T (n,gas) ->  Correction.descr <| CorTermoScale (n,gas)                
-            | PS ->         Correction.descr <| CorPressSens                
-            | Test n -> sprintf "Проерка погрешности %s" n.What 
+            | PTest (n) -> sprintf "Проерка погрешности %s" n.What
+            
 
     [<AutoOpen>]
     module private Helpers =
@@ -45,8 +44,8 @@ module TabsheetVars =
                 let! n = SensorIndex.valuesList
                 let! gas = ScaleEdgePt.valuesList
                 return T(n,gas) }
-            yield PS
-            yield! List.map Test SensorIndex.valuesList ]
+            yield PTest Sens1
+            yield PTest Sens2 ]
                 
 
         let mutable page = Lin Sens1
@@ -88,16 +87,11 @@ module TabsheetVars =
                 for var in [n.Var1; n.Termo] do
                     let pt = TermoScalePt(n,gas,t),var
                     addcol (Prop.dataPoint pt) (var.What + termoLeter t)           
-        | PS ->             
-            for p in PressPt.valuesList do
-                for var in Correction.physVars CorPressSens do
-                    let pt = PressSensPt p, var
-                    addcol (Prop.dataPoint pt) (var.What + pressLeter p)
-            
-        | Test n  ->
-            for testPt in TestPt.valuesList do
-                let pt = TestPt(n,testPt), n.Conc
-                addcol (Prop.dataPoint pt) testPt.What
+        | PTest n  ->
+            for termoPt in TermoPt.valuesList do
+                for scalePt in ScalePt.valuesList do                
+                    let pt = Test(n, scalePt, termoPt), n.Conc
+                    addcol (Prop.dataPoint pt) (scalePt.What + " " + termoPt.What)
 
         setActivePageTitle <| Page.what page
                 
@@ -123,14 +117,8 @@ module TabsheetErrors =
     
     [<AutoOpen>]
     module private Helpers =
-
         type Page = 
             {   N  : SensorIndex } 
-            
-            static member ctx {N = n } = 
-                TestPt.valuesList |> List.map(fun testPt ->  
-                    //let clapan = ScalePt.clapan(n, testPt.ScalePt)
-                    testPt.What, Prop.concError(n,testPt) )
                 
         let mutable page = { N = Sens1 }
 
@@ -162,7 +150,8 @@ module TabsheetErrors =
                 let toolTip = 
                     [|  yield "Снятое значение", decToStr ve.Value                     
                         yield "Номинал", decToStr ve.Nominal
-                        yield "Предел погрешности", decToStr ve.Limit  |]
+                        yield "Абсолютная погрешность", decToStr (ve.Nominal - ve.Value)
+                        yield "Предел абсолютной погрешности", decToStr ve.Limit  |]
                     |> Array.map( fun (p,v) -> sprintf "%s : %s" p v)
                     |> fun v -> String.Join("\n", v)
                 let value = 100m * ( ve.Nominal - ve.Value ) / ve.Limit                 
@@ -173,19 +162,22 @@ module TabsheetErrors =
                 cell.Style.ForeColor <- foreColor
                 cell.Style.BackColor <- backColor
                 cell.ToolTipText <- sprintf "%s\n%s" p.What text
-                e.Value <- decToStr value
+                e.Value <- Decimal.toStr "0.#" value + "%"
                 e.FormattingApplied <- true
 
     let update () =
         setActivePageTitle (sprintf "Погрешность %s"  page.N.What )
         gridProducts.Columns.``remove all columns but`` Columns.main
-        for h,p in Page.ctx page do
-            let col = new DataGridViewTextBoxColumn( DataPropertyName = p,  HeaderText = h)
-            colsFns.[col.GetHashCode()] <- fun product ->
-                let t = typeof<P>
-                let prop = t.GetProperty p
-                prop.GetValue(product,null) :?> VE option
-            gridProducts.Columns.AddColumn col
+
+        for termoPt in TermoPt.valuesList do
+            for scalePt in ScalePt.valuesList do     
+                let dataPropName = Prop.concError(page.N, scalePt, termoPt )
+                let col = new DataGridViewTextBoxColumn( DataPropertyName = dataPropName, HeaderText = scalePt.What + " " + termoPt.What)
+                colsFns.[col.GetHashCode()] <- fun product ->
+                    let t = typeof<P>
+                    let prop = t.GetProperty dataPropName
+                    prop.GetValue(product,null) :?> VE option
+                gridProducts.Columns.AddColumn col
 
     module SensorIndex =
         let get,set, _ = 

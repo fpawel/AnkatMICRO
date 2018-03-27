@@ -72,6 +72,7 @@
     <Compile Include="Utils\Runtime.fs" />
     <Compile Include="Utils\Bin.fs" />
     <Compile Include="Utils\Hex.fs" />
+    <Compile Include="Utils\LoggingRichText.fs" />
     <Compile Include="WinForms\WinFormsControlUtils.fs" />
     <Compile Include="WinForms\WinFormsConverters.fs" />
     <Compile Include="WinForms\WinFormsUtils.fs" />
@@ -159,6 +160,11 @@
     <ProjectReference Include="..\NumericMethod\NumericMethod.csproj">
       <Name>NumericMethod</Name>
       <Project>{e482afd5-9fb2-4d1c-a54f-64f797c198cd}</Project>
+      <Private>True</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\ObjectListView\ObjectListView2012.csproj">
+      <Name>ObjectListView2012</Name>
+      <Project>{18feda0c-d147-4286-b39a-01204808106a}</Project>
       <Private>True</Private>
     </ProjectReference>
     <ProjectReference Include="..\Widgets\Widgets.csproj">

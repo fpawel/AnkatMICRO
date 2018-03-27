@@ -141,8 +141,7 @@ let createNewParty (b:Button) =
                 let b = Alchemy.createNewParty1 (d.Name, prodType, d.Count)
                 party.Party <- b
                 AppContent.save()
-                TabPages.TabChart.update()
-                Scenary.updateGridViewBinding() )
+                TabPages.TabChart.update() )
     popup1.Closing.Add <| fun e ->
         if MyWinForms.Utils.isPropGridEditing g then
             e.Cancel <- true

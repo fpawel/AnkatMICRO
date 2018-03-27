@@ -15,11 +15,9 @@ module private ViewModelProductHelpers =
     let concErrPoints = 
         listOf{ 
              let! n = SensorIndex.valuesList 
-             let! testPt = TestPt.valuesList 
-             return n,testPt }
-
-    //let nCase<'a when 'a : equality> = FSharpType.caseOrder<'a>
-
+             let! scalePt = ScalePt.valuesList 
+             let! termoPt = TermoPt.valuesList 
+             return n, scalePt, termoPt }
 
 type private K = PhysVarValues.K
 
@@ -30,11 +28,11 @@ type Product1(p : P, getProductType, getPgsConc, partyId) =
 
     let mutable connection : Result<string,string> option = None
     
-    let getConcError (n, testPt) = 
+    let getConcError (n, scalePt, tempPt) = 
         let sensor = SensorIndex.sensorOfProdTypeByIndex (getProductType()) n        
         sensor 
         |> Option.bind( fun sensor ->
-            P.concError sensor getPgsConc (n, testPt) p  )
+            P.concError sensor getPgsConc (n, scalePt, tempPt) p  )
 
     let getConcErrors () = 
         concErrPoints
@@ -62,18 +60,16 @@ type Product1(p : P, getProductType, getPgsConc, partyId) =
 
     member x.andThenUpdateAllErrors(f) = 
         let prevConcErrors =  getConcErrors()                
-        let prevVarsValues = getVarsValues()
-        let prevKefsValues = getKefsValues()
+        //let prevVarsValues = getVarsValues()
+        //let prevKefsValues = getKefsValues()
         f()
         let concErrors =  getConcErrors()
-        let varsValues = getVarsValues()
-        let kefsValues = getKefsValues()
+        //let varsValues = getVarsValues()
+        //let kefsValues = getKefsValues()
 
         concErrPoints
         |> List.filter(fun k -> prevConcErrors.[k] <> concErrors.[k] )
         |> List.iter (Prop.concError >> x.RaisePropertyChanged)
-
-        
 
     member x.setKefsInitValues () = 
         let productType = getProductType()    
@@ -101,6 +97,9 @@ type Product1(p : P, getProductType, getPgsConc, partyId) =
         |> Option.getWith ""
 
     member x.GetConcError = getConcError        
+
+    member x.GetConcTermoError (n:SensorIndex, t:TermoPt) : ValueError option = 
+        None
     
     member x.Connection
         with get () = connection

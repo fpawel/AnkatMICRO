@@ -86,7 +86,6 @@ type PartyConfigView() =
             party.ProductType <- v
 
             Thread2.scenary.Set <| PartyWorks.production() 
-            Scenary.updateGridViewBinding()            
             match TabPages.getSelected() with
             | MainWindow.TabsheetChart -> 
                 TabPages.TabChart.update()           
