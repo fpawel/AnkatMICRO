@@ -206,5 +206,10 @@ let createNewParty1( name, productType : ProductType, count) : Party.Content =
         ProductType = productType }, 
             {   Products = products
                 Pgs = productType.DefaultPgsConcMap
-                Temperature = Map.empty
+                Temperature =   
+                    [   TermoLow,-30m 
+                        TermoNorm, 20m
+                        TermoHigh, 45m
+                    ]
+                    |> Map.ofList
                 Journal = Map.empty}
