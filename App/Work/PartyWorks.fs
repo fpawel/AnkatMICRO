@@ -369,7 +369,7 @@ module private Helpers1 =
                 do! Delay.perform ( "Выдержка термокамеры " + strT ) gettime true } ]
 
     let stopTermo() =
-        "Остановка термлкамеры" <|> fun ()  ->
+        "Остановка термокамеры" <|> fun ()  ->
             Hardware.Termo.stop isKeepRunning
                 |> Result.someErr
 
@@ -412,7 +412,6 @@ module private Helpers1 =
                                 yield fixSensConcError Sens2 TermoNorm                
                             yield blowAir()
                         ]
-                    yield stopTermo()
             ]
 
         
@@ -443,7 +442,9 @@ module private Helpers1 =
         let points t = [   
             yield Gas1, [   yield TermoScalePt(Sens1, ScaleBeg, t) 
                             if isSens2() then 
-                                yield TermoScalePt(Sens2, ScaleBeg,t) ]
+                                yield TermoScalePt(Sens2, ScaleBeg,t) 
+                            yield TermoPressPt t
+                        ]
                                  
             yield S1Gas3, [ TermoScalePt(Sens1, ScaleEnd,t)] 
             if isSens2() then 
@@ -454,13 +455,16 @@ module private Helpers1 =
             for t in [TermoLow; TermoHigh; TermoNorm] do
                 yield t.What <||> [
                     yield setupTermo t
-                    yield! blowAndRead (points t) id ]            
+                    yield! blowAndRead (points t) id 
+                    yield blowAir() 
+                 ]            
             yield computeAndWriteGroup <| CorTermoScale (Sens1,ScaleBeg)
             yield computeAndWriteGroup <| CorTermoScale (Sens1,ScaleEnd)
             if isSens2() then
                 yield computeAndWriteGroup <| CorTermoScale (Sens2,ScaleBeg)
                 yield computeAndWriteGroup <| CorTermoScale (Sens2,ScaleEnd)
-            yield blowAir()   ]
+            yield computeAndWriteGroup <| CorTermoPress
+               ]
 
 
     
@@ -482,7 +486,8 @@ let production() =
         adjust()
         lin()
         termo()
-        fixConcError() ]
+        fixConcError() 
+        stopTermo()]
 
 
 module Works =

@@ -40,10 +40,10 @@ type Clapan with
 
     static member valuesList = Helpers.valuesList
 
-    static member code x = 
+    static member code x =  
         Clapan.valuesList 
         |> List.findIndex ( (=) x) 
-        |> ((+) 1)
+        |> ( (<<<) 1)
         |> byte 
 
     
