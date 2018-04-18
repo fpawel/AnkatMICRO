@@ -13,11 +13,13 @@ module private Helpers =
     
     type DelayContext with
         static member getWorks ctx =
-            Thread2.scenary.Value
-            |> Operation.MapReduce Some
-            |> List.choose( function 
-                | Timed (op, ({DelayContext = EqualsTo ctx true } as d), _) -> Some (op,d)
-                | _ -> None ) 
+            let xs =  
+                Thread2.scenary.Value
+                |> Operation.MapReduce Some
+                |> List.choose( function 
+                    | Timed (op, ({DelayContext = EqualsTo ctx true } as d), _) -> Some (op,d)
+                    | _ -> None ) 
+            xs
 
 [<AbstractClass>]
 type DelaysHelperViewModel1() =
