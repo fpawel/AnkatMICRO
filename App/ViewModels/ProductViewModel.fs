@@ -45,97 +45,97 @@ type Product(p, getProdType, getPgs, partyId) =
         with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoLow), TppCh0)
         and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoLow), TppCh0) value
 
-    member x.Var_T00_0_Var1Ch0
-        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoLow), Var1Ch0)
-        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoLow), Var1Ch0) value
+    member x.Var_T00_0_Var2Ch0
+        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoLow), Var2Ch0)
+        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoLow), Var2Ch0) value
 
     member x.Var_T00_1_TppCh0
         with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoNorm), TppCh0)
         and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoNorm), TppCh0) value
 
-    member x.Var_T00_1_Var1Ch0
-        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoNorm), Var1Ch0)
-        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoNorm), Var1Ch0) value
+    member x.Var_T00_1_Var2Ch0
+        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoNorm), Var2Ch0)
+        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoNorm), Var2Ch0) value
 
     member x.Var_T00_2_TppCh0
         with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoHigh), TppCh0)
         and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoHigh), TppCh0) value
 
-    member x.Var_T00_2_Var1Ch0
-        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoHigh), Var1Ch0)
-        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoHigh), Var1Ch0) value
+    member x.Var_T00_2_Var2Ch0
+        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleBeg, TermoHigh), Var2Ch0)
+        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleBeg, TermoHigh), Var2Ch0) value
 
     member x.Var_TK0_0_TppCh0
         with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoLow), TppCh0)
         and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoLow), TppCh0) value
 
-    member x.Var_TK0_0_Var1Ch0
-        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoLow), Var1Ch0)
-        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoLow), Var1Ch0) value
+    member x.Var_TK0_0_Var2Ch0
+        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoLow), Var2Ch0)
+        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoLow), Var2Ch0) value
 
     member x.Var_TK0_1_TppCh0
         with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoNorm), TppCh0)
         and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoNorm), TppCh0) value
 
-    member x.Var_TK0_1_Var1Ch0
-        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoNorm), Var1Ch0)
-        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoNorm), Var1Ch0) value
+    member x.Var_TK0_1_Var2Ch0
+        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoNorm), Var2Ch0)
+        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoNorm), Var2Ch0) value
 
     member x.Var_TK0_2_TppCh0
         with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoHigh), TppCh0)
         and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoHigh), TppCh0) value
 
-    member x.Var_TK0_2_Var1Ch0
-        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoHigh), Var1Ch0)
-        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoHigh), Var1Ch0) value
+    member x.Var_TK0_2_Var2Ch0
+        with get () = x.getVarUi (TermoScalePt(Sens1, ScaleEnd, TermoHigh), Var2Ch0)
+        and set value = x.setVarUi (TermoScalePt(Sens1, ScaleEnd, TermoHigh), Var2Ch0) value
 
     member x.Var_T01_0_TppCh1
         with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoLow), TppCh1)
         and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoLow), TppCh1) value
 
-    member x.Var_T01_0_Var1Ch1
-        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoLow), Var1Ch1)
-        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoLow), Var1Ch1) value
+    member x.Var_T01_0_Var2Ch1
+        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoLow), Var2Ch1)
+        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoLow), Var2Ch1) value
 
     member x.Var_T01_1_TppCh1
         with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoNorm), TppCh1)
         and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoNorm), TppCh1) value
 
-    member x.Var_T01_1_Var1Ch1
-        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoNorm), Var1Ch1)
-        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoNorm), Var1Ch1) value
+    member x.Var_T01_1_Var2Ch1
+        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoNorm), Var2Ch1)
+        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoNorm), Var2Ch1) value
 
     member x.Var_T01_2_TppCh1
         with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoHigh), TppCh1)
         and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoHigh), TppCh1) value
 
-    member x.Var_T01_2_Var1Ch1
-        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoHigh), Var1Ch1)
-        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoHigh), Var1Ch1) value
+    member x.Var_T01_2_Var2Ch1
+        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleBeg, TermoHigh), Var2Ch1)
+        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleBeg, TermoHigh), Var2Ch1) value
 
     member x.Var_TK1_0_TppCh1
         with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoLow), TppCh1)
         and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoLow), TppCh1) value
 
-    member x.Var_TK1_0_Var1Ch1
-        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoLow), Var1Ch1)
-        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoLow), Var1Ch1) value
+    member x.Var_TK1_0_Var2Ch1
+        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoLow), Var2Ch1)
+        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoLow), Var2Ch1) value
 
     member x.Var_TK1_1_TppCh1
         with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoNorm), TppCh1)
         and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoNorm), TppCh1) value
 
-    member x.Var_TK1_1_Var1Ch1
-        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoNorm), Var1Ch1)
-        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoNorm), Var1Ch1) value
+    member x.Var_TK1_1_Var2Ch1
+        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoNorm), Var2Ch1)
+        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoNorm), Var2Ch1) value
 
     member x.Var_TK1_2_TppCh1
         with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoHigh), TppCh1)
         and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoHigh), TppCh1) value
 
-    member x.Var_TK1_2_Var1Ch1
-        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoHigh), Var1Ch1)
-        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoHigh), Var1Ch1) value
+    member x.Var_TK1_2_Var2Ch1
+        with get () = x.getVarUi (TermoScalePt(Sens2, ScaleEnd, TermoHigh), Var2Ch1)
+        and set value = x.setVarUi (TermoScalePt(Sens2, ScaleEnd, TermoHigh), Var2Ch1) value
 
     member x.Var_TEST0_0_0_TppCh0
         with get () = x.getVarUi (Test(Sens1, ScaleEdge ScaleBeg, TermoLow), TppCh0)

@@ -209,6 +209,10 @@ module Delay =
         onStop.Value() 
         result
 
+    let sleep what time = 
+        perform what (fun() -> time) false 
+        |> ignore
+
 module ModalMessage = 
     let onShow = Ref.Initializable<_>(sprintf "ModalMessage.onShow %s:%s" __LINE__ __SOURCE_FILE__ )
     let getIsVivisble = Ref.Initializable<_>(sprintf "ModalMessage.getIsVivisble %s:%s" __LINE__ __SOURCE_FILE__ )
@@ -398,7 +402,7 @@ module private Helpers1 =
     let fixSensConcError sensInd temp = 
         (SensorIndex.what sensInd) <||> 
             [   for scalePt in ScalePt.valuesList do 
-                    yield blow 3 (scalePt.Clapan sensInd) "Продувка"
+                    yield blow 3 (scalePt.Clapan sensInd) ( "Продувка " + (scalePt.Clapan sensInd).What )
                     yield fixProdData [ Test(sensInd, scalePt, temp) ] 
             ]
 
@@ -407,9 +411,9 @@ module private Helpers1 =
             [   for temp in [TermoNorm; TermoLow; TermoHigh] do
                     yield temp.What <||>
                         [   yield setupTermo temp
-                            yield fixSensConcError Sens1 TermoNorm
+                            yield fixSensConcError Sens1 temp
                             if isSens2() then
-                                yield fixSensConcError Sens2 TermoNorm                
+                                yield fixSensConcError Sens2 temp                
                             yield blowAir()
                         ]
             ]
@@ -479,6 +483,14 @@ let production() =
    
     (if isSens2() then "2K" else "1K") <||> [
         setupTermo TermoNorm
+        
+        "Корректировка температуры mcu" <|> fun _ ->
+            party.AdjustMCU 
+                (fun() -> Delay.sleep "Корректировка температуры mcu" (TimeSpan.FromSeconds 30.) ) 
+                (Hardware.Termo.read1 isKeepRunning)
+                isKeepRunning
+            None
+
         "Установка режима работы" <|> fun _ ->
             party.SetWorkMode 2
         initCoefs()

@@ -29,7 +29,7 @@ let kefss() =
 module Name = 
     let private nn<'a> (x:'a) = sprintf "%A" x
 
-    let (|PhysVar1|) = nn<PhysVar>
+    let (|PhysVar2|) = nn<PhysVar>
     let (|Sens|) = nn<SensorIndex>
     let (|T|) = nn<TermoPt>
     let (|P|) = nn<PressPt>
@@ -42,11 +42,11 @@ module Name =
 
     let sens_gas_t (Sens n, Gas gas, T t) = sprintf "%s, %s, %s" n gas t
 
-    let physVar (PhysVar1 x) = x
+    let physVar (PhysVar2 x) = x
 
     let t (T x) = x
 
-    let dataPoint (x, PhysVar1 y) = 
+    let dataPoint (x, PhysVar2 y) = 
         let str1 =
             match x with            
             | LinPt (Sens n, LinN m) -> 

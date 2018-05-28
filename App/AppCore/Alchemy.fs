@@ -99,7 +99,7 @@ module private PivateComputeProduct =
             let (~%%) = getValuesTermo p n ScaleBeg 
             result {
                 let! t = %% n.Termo
-                let! var = %% n.Var1
+                let! var = %% n.Var2
                 return List.zip t var }
             |> Result.map
 //                ( fun xy ->            
@@ -112,8 +112,8 @@ module private PivateComputeProduct =
         | CorTermoScale ( n, ScaleEnd ) as corr -> 
             result {
                 let! t = getValuesTermo p n ScaleEnd n.Termo
-                let! var = getValuesTermo p n ScaleEnd n.Var1
-                let! var0 = getValuesTermo p n ScaleBeg n.Var1
+                let! var = getValuesTermo p n ScaleEnd n.Var2
+                let! var0 = getValuesTermo p n ScaleBeg n.Var2
                 return List.zip3 t var0 var}
             |> fmtCorrErr ( fun (TermoScalePt (_,_,t) ) -> t.What)
             |> Result.bind( fun xs ->

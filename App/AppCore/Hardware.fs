@@ -43,6 +43,7 @@ module Pneumo =
         r |> Result.map(fun _ -> ())
 
 module Termo =   
+    open Utils.Result.Unwrap
 
     type TermoState = 
         | Start | Stop | Setpoint of decimal
@@ -162,6 +163,13 @@ module Termo =
         |> MainWindow.HardwareInfo.termo.setTextSafe (Logging.fromResult r)
 
         r
+
+    let read1 isKeepRunning = 
+        match read isKeepRunning with
+        |Err err-> Err err 
+        | Ok (t,_) -> Ok t
+
+    
 
     let write isKeepRunning newstate = 
         let r = 

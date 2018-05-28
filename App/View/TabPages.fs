@@ -88,7 +88,7 @@ module TabsheetVars =
 
         | T (n,gas) -> 
             for t in TermoPt.valuesList do
-                for var in [n.Var1; n.Termo] do
+                for var in [n.Var2; n.Termo] do
                     let pt = TermoScalePt(n,gas,t),var
                     addcol (Prop.dataPoint pt) (var.What + termoLeter t)           
         | PTest n  ->

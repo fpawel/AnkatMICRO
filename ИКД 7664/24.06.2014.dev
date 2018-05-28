@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<Main>
+    <Ïðèáîð_1 àäðåñ="1" Âûáðàí="1">
+        <vars CCh0="4.6175" CCh1="1839.95" CCh2="7346.9" PkPa="98.6342" Pmm="740" Tmcu="24.0924" Vbat="3.97107" Vref="1.24653" Vmcu="3.02196" VdatP="0.240223" CoutCh0="2.39453" TppCh0="36.4352" ILamp_on_Ch0="0.121465" ILamp_off_Ch0="0.00038" Uw_Ch0="2703.02" Ur_Ch0="1081.29" WORK_kanal_Ch0="99.1906" REF_kanal_Ch0="100.019" Var1Ch0="-0.528007" Var2Ch0="-0.232435" Var3Ch0="443.767" FppCh0="67" CoutCh1="0" TppCh1="66.1838" ILamp_on_Ch1="0.119373" ILamp_off_Ch1="0.000561" Uw_Ch1="0" Ur_Ch1="0" WORK_kanal_Ch1="0" REF_kanal_Ch1="0" Var1Ch1="1772.07" Var2Ch1="-0.158237" Var3Ch1="1772.07" FppCh1="67" />
+        <koefs VER_PO="400101" PPRIBOR_TYPE="766403" YEAR="2014" SER_NUMBER="2053" MAX_COUNT_REG="64" ED_IZMER_1="3" Gas_Type_1="13" SHKALA_1="10" PREDEL_LO_1="0" PREDEL_HI_1="10" Pgs1_1="0" Pgs3_1="5" KNull_1="0" KSens_1="100" ED_IZMER_2="4" Gas_Type_2="0" SHKALA_2="99" PREDEL_LO_2="0" PREDEL_HI_2="99" Pgs1_2="0" Pgs3_2="99" KNull_2="0" KSens_2="100" CLin1_0="-0,010031" CLin1_1="0,1595457" CLin1_2="-0,2299409" CLin1_3="0,0119084" KNull_T1_0="0" KNull_T1_1="0" KNull_T1_2="0" KSens_T1_0="1" KSens_T1_1="0" KSens_T1_2="0" CLin2_0="0" CLin2_1="0" CLin2_2="0" CLin2_3="0" KNull_T2_0="0" KNull_T2_1="0" KNull_T2_2="0" KSens_T2_0="0" KSens_T2_1="0" KSens_T2_2="0" Coef_Pmmhg_0="740" Coef_Pmmhg_1="0" KNull_TP_0="0" KNull_TP_1="0" KNull_TP_2="0" kFt="602.41" kdFt="-286" />
+        <LIN_1_4>
+            <CoutCh0 _0="0,062872" _1="3,19436" _2="4,04617" _3="4,91859" />
+            <PGSch _0="0" _1="1,291" _2="2,402" _3="4,931" />
+        </LIN_1_4>
+        <LIN_2>
+            <PGSco _0="0" _1="49,3" _2="94,2" />
+        </LIN_2>
+        <SCALE_ALL_S_P>
+            <Pt _0="734" _1="800" />
+        </SCALE_ALL_S_P>
+    </Ïðèáîð_1>
+</Main>

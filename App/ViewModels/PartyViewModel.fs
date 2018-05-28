@@ -220,6 +220,15 @@ type Party
                 x.RaisePropertyChanged "Journal"
 
 
+    member x.AdjustMCU delay readTemp keepRunning = 
+        products 
+        |> Seq.filter(fun p -> p.IsChecked)
+        |> Seq.iter( fun p ->
+            if keepRunning() then
+                p.AdjustMCU delay readTemp keepRunning 0
+                |> ignore
+             )
+
 [<AutoOpen>]
 module private RunInfoHelpers =
     let private getHash (x:string) = x.GetHashCode()

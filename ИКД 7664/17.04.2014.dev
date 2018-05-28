@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<Main>
+    <Ïðèáîð_1 àäðåñ="1" Âûáðàí="1">
+        <vars CCh0="0" CCh1="0" CCh2="180882" PkPa="98.6342" Pmm="740" Tmcu="-4.15931" Vbat="3.98359" Vref="1.25113" Vmcu="3.04038" VdatP="0.244349" CoutCh0="-0.002869" TppCh0="-4.86118" ILamp_on_Ch0="0.123749" ILamp_off_Ch0="0.000368" Uw_Ch0="1961.42" Ur_Ch0="725.659" WORK_kanal_Ch0="99.8868" REF_kanal_Ch0="99.8132" Var1Ch0="0.073509" Var2Ch0="1.75846" Var3Ch0="0.073402" FppCh0="64" CoutCh1="0.23257" TppCh1="-6.51719" ILamp_on_Ch1="0" ILamp_off_Ch1="0" Uw_Ch1="0" Ur_Ch1="0" WORK_kanal_Ch1="0" REF_kanal_Ch1="0" Var1Ch1="0" Var2Ch1="-0.981765" Var3Ch1="0" FppCh1="0" />
+        <koefs VER_PO="400101" PPRIBOR_TYPE="766403" YEAR="2014" SER_NUMBER="1788" MAX_COUNT_REG="64" ED_IZMER_1="3" Gas_Type_1="13" SHKALA_1="10" PREDEL_LO_1="0" PREDEL_HI_1="10" Pgs1_1="0" Pgs3_1="5" KNull_1="0" KSens_1="100" ED_IZMER_2="4" Gas_Type_2="16" SHKALA_2="99" PREDEL_LO_2="0" PREDEL_HI_2="99" Pgs1_2="0" Pgs3_2="99" KNull_2="0" KSens_2="100" CLin1_0="-0,0057692" CLin1_1="0,0958804" CLin1_2="-0,1286213" CLin1_3="0,0038062" KNull_T1_0="0" KNull_T1_1="0" KNull_T1_2="0" KSens_T1_0="1" KSens_T1_1="0" KSens_T1_2="0" CLin2_0="-0,0243299" CLin2_1="0,2565135" CLin2_2="0,0079847" CLin2_3="0" KNull_T2_0="0" KNull_T2_1="0" KNull_T2_2="0" KSens_T2_0="1" KSens_T2_1="0" KSens_T2_2="0" Coef_Pmmhg_0="740" Coef_Pmmhg_1="0" KNull_TP_0="0" KNull_TP_1="0" KNull_TP_2="0" kFt="602.41" kdFt="-273" />
+        <LIN_1_4>
+            <PGSch _0="0" _1="1,891" _2="4,781" _3="9,87" />
+        </LIN_1_4>
+        <SCALE_1_0_T>
+            <Var2Ch0 _1="-0,086052" />
+            <TppCh0 _1="33,857" />
+        </SCALE_1_0_T>
+        <SCALE_1_S_T>
+            <Var2Ch0 _1="-41,2514" />
+            <TppCh0 _1="33,8611" />
+        </SCALE_1_S_T>
+        <LIN_2>
+            <PGSco _0="0" _1="49,3" _2="94,2" />
+        </LIN_2>
+        <SCALE_2_0_T>
+            <Var2Ch1 _1="0,0158" />
+            <TppCh1 _1="33,1303" />
+        </SCALE_2_0_T>
+        <SCALE_2_S_T>
+            <Var2Ch1 _1="-8,19358" />
+            <TppCh1 _1="33,1633" />
+        </SCALE_2_S_T>
+        <SCALE_ALL_S_P>
+            <Pt _0="743" _1="783" />
+        </SCALE_ALL_S_P>
+        <P_0_T>
+            <TppCh0 _1="33,8535" />
+            <VdatP _1="0,244083" />
+        </P_0_T>
+    </Ïðèáîð_1>
+</Main>

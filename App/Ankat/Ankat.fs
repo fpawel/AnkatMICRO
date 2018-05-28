@@ -230,7 +230,8 @@ type SensorIndex with
 
     member x.Conc = SensorIndex.conc x
     member x.Termo = SensorIndex.termo x
-    member x.Var1 = SensorIndex.var1 x
+    //member x.Var1 = SensorIndex.var1 x
+    member x.Var2 = SensorIndex.var2 x
     member x.N = SensorIndex.n x
     member x.What = SensorIndex.what x
 
@@ -247,9 +248,13 @@ type SensorIndex with
         | Sens1 -> TppCh0
         | Sens2 -> TppCh1
 
-    static member var1 = function
-        | Sens1 -> Var1Ch0
-        | Sens2 -> Var1Ch1
+    //static member var1 = function
+    //    | Sens1 -> Var1Ch0
+    //    | Sens2 -> Var1Ch1
+
+    static member var2 = function
+        | Sens1 -> Var2Ch0
+        | Sens2 -> Var2Ch1
 
     static member n = function
         | Sens1 -> 1
@@ -310,7 +315,7 @@ type ProdDataPt =
 
     static member physVars = function
         | LinPt (n,_) -> [n.Conc]
-        | TermoScalePt (n,_,_) -> [n.Termo; n.Var1]
+        | TermoScalePt (n,_,_) -> [n.Termo; n.Var2]
         | TermoPressPt _ -> [TppCh0;VdatP]
         | Test (n,_,_) -> [n.Termo; n.Conc]
 

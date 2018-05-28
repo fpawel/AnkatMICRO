@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="Windows-1252" ?>
+<Main>
+    <Ïðèáîð_1 àäðåñ="1" Âûáðàí="1">
+        <vars CCh0="30.9961" CCh1="0.184504" CCh2="47.6584" PkPa="101.3" Pmm="740" Tmcu="47.2369" Vbat="3.95335" Vref="1.25346" Vmcu="3.05021" VdatP="0.256856" CoutCh0="1.40036" TppCh0="54.3145" ILamp_on_Ch0="0.123745" ILamp_off_Ch0="0.000395" Uw_Ch0="1374.01" Ur_Ch0="905.906" WORK_kanal_Ch0="93.4099" REF_kanal_Ch0="100.004" Var1Ch0="0.794174" Var2Ch0="-0.019672" Var3Ch0="-0.297592" FppCh0="66" CoutCh1="0" TppCh1="29.1721" ILamp_on_Ch1="0" ILamp_off_Ch1="0" Uw_Ch1="2265.5" Ur_Ch1="901.137" WORK_kanal_Ch1="0" REF_kanal_Ch1="0" Var1Ch1="-0.190841" Var2Ch1="-0.04776" Var3Ch1="0" FppCh1="0" />
+        <koefs VER_PO="300101" PPRIBOR_TYPE="766403" YEAR="2015" SER_NUMBER="1443" MAX_COUNT_REG="64" ED_IZMER_1="4" Gas_Type_1="15" SHKALA_1="99" PREDEL_LO_1="0" PREDEL_HI_1="99" Pgs1_1="0" Pgs3_1="99" KNull_1="-0.000114" KSens_1="100" ED_IZMER_2="0" Gas_Type_2="0" SHKALA_2="0" PREDEL_LO_2="0" PREDEL_HI_2="0" Pgs1_2="0" Pgs3_2="0" KNull_2="0" KSens_2="0" CLin1_0="0" CLin1_1="1" CLin1_2="0" CLin1_3="0" KNull_T1_0="0,3592707" KNull_T1_1="-0,0136764" KNull_T1_2="-0,0003327" KSens_T1_0="0,9721171" KSens_T1_1="0,0010281" KSens_T1_2="0,0000004" CLin2_0="0" CLin2_1="0" CLin2_2="0" CLin2_3="0" KNull_T2_0="0" KNull_T2_1="0" KNull_T2_2="0" KSens_T2_0="0" KSens_T2_1="0" KSens_T2_2="0" Coef_Pmmhg_0="740" Coef_Pmmhg_1="0" KNull_TP_0="0.003384" KNull_TP_1="-0.000084" KNull_TP_2="-0.000002" kFt="602,401" kdFt="-287,8" />
+        <SCALE_1_0_T>
+            <Var2Ch0 _0="-0,498495" _1="0,258706" _2="1,37494" />
+            <TppCh0 _0="-22,5538" _1="27,1951" _2="54,5137" />
+        </SCALE_1_0_T>
+        <SCALE_1_S_T>
+            <Var0 _0="-0,498495" _1="0,258706" _2="1,37494" />
+            <Var2Ch0 _0="-7,50491" _1="-6,38787" _2="-5,08342" />
+            <TppCh0 _0="-23,044" _1="26,8379" _2="54,307" />
+        </SCALE_1_S_T>
+        <P_0_T>
+            <TppCh0 _0="-22,5976" _1="27,1296" _2="54,4532" />
+            <VdatP _0="0,247074" _1="0,251605" _2="0,257227" />
+        </P_0_T>
+    </Ïðèáîð_1>
+</Main>
