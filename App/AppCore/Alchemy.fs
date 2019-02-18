@@ -134,7 +134,6 @@ module private PivateComputeProduct =
 
     let doValuesGaussXY group xy =
         let groupCoefs = Correction.coefs group
-        let groupCoefsSet = Set.ofList groupCoefs
         let strGroupCoefs = Seq.toStr ", " (Coef.order >> string) groupCoefs
 
         let x,y = List.toArray xy |> Array.unzip

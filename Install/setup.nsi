@@ -118,7 +118,7 @@ Section "MainSection" SEC01
   File "..\App\Bin\Release\Content\*.*"
 
   SetOutPath "$INSTDIR\ru"
-  File "..\App\Bin\Release\ru\*.*"
+  File "..\App\Bin\Release\*.*"
   
   SetOutPath "$INSTDIR"
   SetOverwrite ifnewer

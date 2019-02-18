@@ -2,22 +2,26 @@
 <Main>
     <Прибор_1 адрес="1" Выбран="1">
         <vars CCh0="0" CCh1="0.027932" CCh2="20.5226" PkPa="0" Pmm="4.09984" Tmcu="23.5698" Vbat="3.9511" Vref="1.25" Vmcu="0.332144" VdatP="0.23209" CoutCh0="-0.565422" TppCh0="0" ILamp_on_Ch0="0.1265" ILamp_off_Ch0="0.000395" Uw_Ch0="2942.12" Ur_Ch0="2445.38" WORK_kanal_Ch0="100.066" REF_kanal_Ch0="102.662" Var1Ch0="-0.114654" Var2Ch0="0" Var3Ch0="-0.297592" FppCh0="66" CoutCh1="0.036064" TppCh1="29.1613" ILamp_on_Ch1="0" ILamp_off_Ch1="0" Uw_Ch1="2265.5" Ur_Ch1="901.137" WORK_kanal_Ch1="100.071" REF_kanal_Ch1="100.032" Var1Ch1="-0.000854" Var2Ch1="4.22931" Var3Ch1="0" FppCh1="0" />
-        <koefs VER_PO=" " PPRIBOR_TYPE="0" YEAR="2018" SER_NUMBER="1" MAX_COUNT_REG="64" ED_IZMER_1="7" Gas_Type_1="12" SHKALA_1="2" PREDEL_LO_1="0" PREDEL_HI_1="5" Pgs1_1="0" Pgs3_1="4.93" KNull_1="2.24163" KSens_1="1" ED_IZMER_2="7" Gas_Type_2="11" SHKALA_2="2" PREDEL_LO_2="0" PREDEL_HI_2="5" Pgs1_2="0" Pgs3_2="4.93" KNull_2="2.24163" KSens_2="1" CLin1_0="0" CLin1_1="1" CLin1_2="0" CLin1_3="0" KNull_T1_0="0" KNull_T1_1="0" KNull_T1_2="0" KSens_T1_0="1" KSens_T1_1="0" KSens_T1_2="0" CLin2_0="0" CLin2_1="1" CLin2_2="0" CLin2_3="0" KNull_T2_0="0" KNull_T2_1="0" KNull_T2_2="0" KSens_T2_0="1" KSens_T2_1="0" KSens_T2_2="0" Coef_Pmmhg_0="0" Coef_Pmmhg_1="0" KNull_TP_0="0" KNull_TP_1="0" KNull_TP_2="0" kFt="602.41" kdFt="273" />
+        <koefs VER_PO=" " PPRIBOR_TYPE="0" YEAR="2018" SER_NUMBER="1" MAX_COUNT_REG="64" ED_IZMER_1="7" Gas_Type_1="12" SHKALA_1="2" PREDEL_LO_1="0" PREDEL_HI_1="5" Pgs1_1="0" Pgs3_1="4.93" KNull_1="2.24163" KSens_1="1" ED_IZMER_2="7" Gas_Type_2="11" SHKALA_2="2" PREDEL_LO_2="0" PREDEL_HI_2="5" Pgs1_2="0" Pgs3_2="4.93" KNull_2="2.24163" KSens_2="1" CLin1_0="-27,5952303" CLin1_1="1,7343985" CLin1_2="-0,003078" CLin1_3="0,0003719" KNull_T1_0="-10,0704427" KNull_T1_1="-0,1789149" KNull_T1_2="-0,0071935" KSens_T1_0="0,9988886" KSens_T1_1="-0,0018139" KSens_T1_2="0,0000889" CLin2_0="0" CLin2_1="1" CLin2_2="0" CLin2_3="0" KNull_T2_0="0" KNull_T2_1="0" KNull_T2_2="0" KSens_T2_0="1" KSens_T2_1="0" KSens_T2_2="0" Coef_Pmmhg_0="0" Coef_Pmmhg_1="0" KNull_TP_0="0" KNull_TP_1="0" KNull_TP_2="0" kFt="602.41" kdFt="273" />
         <LIN_1_3>
-            <CoutCh0 _0="0,001175" _1="63,7891" _2="94,3464" />
-            <PGSch _0="0" _1="49,32" _2="94,3" />
+            <CoutCh0 _0="17" _1="49" _2="87" />
+            <PGSch _0="1" _1="50" _2="100" />
         </LIN_1_3>
+        <LIN_1_4>
+            <CoutCh0 _0="23" _1="34" _2="55" _3="69" />
+            <PGSch _0="1" _1="12" _2="15" _3="20" />
+        </LIN_1_4>
         <SCALE_1_0_T>
-            <Var2Ch0 _0="-1,29091" _1="0,158813" _2="0,50724" />
-            <TppCh0 _0="-26,6851" _1="23,8181" _2="51,3338" />
+            <Var2Ch0 _0="12" _1="17" _2="37" />
+            <TppCh0 _0="-33" _1="21" _2="50" />
         </SCALE_1_0_T>
         <SCALE_1_S_T>
-            <Var0 _0="-1,29091" _1="0,158813" _2="0,50724" />
-            <Var2Ch0 _0="22,4201" _1="0,574148" _2="33,1101" />
-            <TppCh0 _0="-26,6898" _1="23,4078" _2="51,4776" />
+            <Var0 _0="12" _1="17" _2="37" />
+            <Var2Ch0 _0="57" _1="69" _2="83" />
+            <TppCh0 _0="-33" _1="21" _2="50" />
         </SCALE_1_S_T>
         <SCALE_2_0_T>
-            <Var2Ch1 _0="-0,090026" _1="0,186554" _2="1,4168" />
+            <Var2Ch1 _0="57" _1="69" _2="83" />
             <TppCh1 _0="-25,0796" _1="25,358" _2="52,5524" />
         </SCALE_2_0_T>
         <SCALE_2_S_T>

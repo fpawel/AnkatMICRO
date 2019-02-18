@@ -381,8 +381,7 @@ module private Helpers1 =
     let fixProdData prods =
         let physVars = 
             prods 
-            |> List.map  ProdDataPt.physVars 
-            |> List.concat
+            |> List.collect  ProdDataPt.physVars
             |> Set.ofList
 
         let strPhysVars = Seq.toStr ", " PhysVar.what physVars
