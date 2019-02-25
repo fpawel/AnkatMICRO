@@ -407,7 +407,7 @@ module private Helpers1 =
 
     let fixConcError() = 
         "Снятие погрешности"  <||>
-            [   for temp in [TermoNorm; TermoLow; TermoHigh] do
+            [   for temp in [ TermoHigh; TermoLow; TermoNorm;  ] do
                     yield temp.What <||>
                         [   yield setupTermo temp
                             yield fixSensConcError Sens1 temp
@@ -455,7 +455,7 @@ module private Helpers1 =
 
         "Термокомпенсация"  <||> [
                     
-            for t in [TermoLow; TermoHigh; TermoNorm] do
+            for t in [TermoNorm; TermoLow; TermoHigh; ] do
                 yield t.What <||> [
                     yield setupTermo t
                     yield! blowAndRead (points t) id 

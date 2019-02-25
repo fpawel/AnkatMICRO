@@ -13,7 +13,6 @@ type Units =
     static member what = Units.context >> snd
 
     member x.What = Units.context x |> snd 
-    
 
 type Scale =     
     | Sc2
@@ -38,7 +37,6 @@ type Scale =
         Sc5 
         Sc10 
         Sc100  ]
-
 
 type Sensor =
     | CO2_2 
@@ -73,7 +71,6 @@ type Sensor =
         | C3H8      -> "C₃H₈"
         | SumCH     -> "∑CH"
         | CH4       -> "CH₄"
-        
     
     static member values = [
         CO2_2  
@@ -167,7 +164,18 @@ module private ProductTypeHelp =
             yield   n1 13 C3H8
             yield   n1 14 CH4 
             yield!  n1 15 <== all
-            yield!  n1 16 <== all ]
+            yield!  n1 16 <== all 
+
+            for n in [26; 27; 28; 29; 30; 31; 32;  ] do
+                yield! n1 n <== ch
+                
+            for n in [33; 34; 35] do
+                yield! n2 n <== all
+
+            for n in [42; 43; 44] do
+                yield! n1 n <== ch
+
+            ]
 
 type ProductType with
     static member first = 

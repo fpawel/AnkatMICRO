@@ -295,11 +295,6 @@ type Product1(p : P, getProductType, getPgsConc, partyId) =
                 else
                     Ok() 
             }
-        
-
-
-        
-        
 
     member x.ComputeKefGroup kefGroup = 
         x.Product <- snd <| runState (Alchemy.compute kefGroup getPgsConc (getProductType())) p

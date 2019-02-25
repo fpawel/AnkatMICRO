@@ -630,8 +630,6 @@ type Product =
                     let dt = temp - 20m     
                     0.5m * abs( sensorConcErrorLimit*dt ) / 10.0m  
                     )
-            
-                
 
 type LoggingRecord = DateTime * Logging.Level * string
 
@@ -702,8 +700,6 @@ module Prop =
     let concError (n : SensorIndex, scalePt:ScalePt, tempPt: TermoPt) = 
         sprintf "ConcError%d_%d_%d" (valueOrderOf n) (valueOrderOf scalePt) (valueOrderOf tempPt)
 
-        
-
     let physVar (x : PhysVar) = 
         x.What
 
@@ -713,7 +709,6 @@ module Prop =
         | TermoScalePt (n,ScaleEnd,t) -> sprintf "TK%d_%d" (valueOrderOf n) (valueOrderOf t )
         | Test (n,scalePt, termoPt) -> sprintf "TEST%d_%d_%d" (valueOrderOf n) (valueOrderOf scalePt) (valueOrderOf termoPt)
         | TermoPressPt t -> sprintf "PT%d" (valueOrderOf t )
-        
 
     let dataPoint (x, y  : PhysVar) = 
         sprintf "Var_%s_%s" (prodData x) y.What
@@ -723,7 +718,6 @@ module Prop =
 
     let pgs x = 
         sprintf "Pgs%s" (clapan x)
-
 
     let delayContext = function
         | BlowDelay n -> sprintf "BlowDelay_%s" (clapan n)
