@@ -187,8 +187,7 @@ module private Helpers =
             | Some b -> 
                 match AppContent.load b.Id with
                 | None -> 
-                    Thread2.scenary.Set <| PartyWorks.production() 
-                    TabPages.TabChart.update()                    
+                    Thread2.scenary.Set <| PartyWorks.production()                     
                 | Some error -> 
                     MessageBox.Show(sprintf "Не удалось открыть данные партии %A, %A. %s" 
                                         b.Date b.ProductType error, 

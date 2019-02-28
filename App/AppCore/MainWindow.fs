@@ -97,7 +97,6 @@ module HardwareInfo =
 
 type Tabsheet = 
     | TabsheetParty
-    | TabsheetChart
     | TabsheetKefs
     | TabsheetScenary
     | TabsheetVars
@@ -105,14 +104,12 @@ type Tabsheet =
     member x.Title = Tabsheet.title x
     static member valuesList = 
         [   TabsheetParty
-            TabsheetChart
             TabsheetKefs
             TabsheetScenary
             TabsheetVars
             TabsheetErrors ]
     static member title = function
         | TabsheetParty ->   "Партия"
-        | TabsheetChart ->   "График"
         | TabsheetKefs ->    "Коэф-ты"
         | TabsheetScenary -> "Сценарий"
         | TabsheetVars ->    "Данные"
@@ -120,7 +117,6 @@ type Tabsheet =
 
     static member descr = function
         | TabsheetParty ->   "Партия настраиваемых приборов"
-        | TabsheetChart ->   "Графики измеряемых параметров приборов партии"
         | TabsheetKefs ->    "Коэффициенты приборов партии"
         | TabsheetScenary -> "Сценарий настройки приборов партии"
         | TabsheetVars ->    "Данные приборов партии"

@@ -52,31 +52,16 @@ module private Helpers1 =
         let h,_ as party = party.Party
         parties <- Map.add h.Id h parties
         AppConfig.config.View.PartyId <- h.Id
-        
-    type PSr = Chart.ProductSeriesInfo
     
 
 let save<'a> (_ : 'a) =
     let ( partyHead,_) as partyValue = party.Party    
-    PhysVarValues.save()    
     if isChanged.Value then
         let r = Party.save partyValue
         match r with
         | Err e -> Logging.error "не удалось сохранить партию : %s" e
         | Ok () -> setSaved ()
     
-
-let updateChartSeriesList () =
-    Chart.clear()        
-    let h,_ = party.Party
-    let partyPath = Repository.PartyPath.fromPartyHead h
-    party.Products 
-    |> Seq.filter(fun p -> p.IsChecked)
-    |> Seq.iter ( fun p -> 
-        Chart.addProductSeries
-            {   PSr.Product = p.Product.Id
-                PSr.Party = partyPath
-                PSr.Name = p.What}  )
 
 let load partyId = 
     let r = Party.openById partyId parties

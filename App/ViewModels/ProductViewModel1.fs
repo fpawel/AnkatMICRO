@@ -10,16 +10,13 @@ open Ankat.Alchemy
 module private ViewModelProductHelpers =
     type P = Ankat.Product
     let appCfg = AppConfig.config
-    type PSr = Chart.ProductSeriesInfo
-
+    
     let concErrPoints = 
         listOf{ 
              let! n = SensorIndex.valuesList 
              let! scalePt = ScalePt.valuesList 
              let! termoPt = TermoPt.valuesList 
              return n, scalePt, termoPt }
-
-type private K = PhysVarValues.K
 
 [<AbstractClass>]
 type Product1(p : P, getProductType, getPgsConc, partyId) =
@@ -83,9 +80,6 @@ type Product1(p : P, getProductType, getPgsConc, partyId) =
         x.Product <- snd <| runState  prodstate x.Product
             
     member x.setPhysVarValue var value =        
-        PhysVarValues.addValue {K.Party = partyId; K.Product = p.Id; K.Var = var } value
-        MainWindow.form.PerformThreadSafeAction <| fun () ->
-            Chart.addProductValue p.Id var value
         if Map.tryFind var physVar <> Some value then
             physVar <- Map.add var value physVar
             x.RaisePropertyChanged (Prop.physVar var)
@@ -115,12 +109,7 @@ type Product1(p : P, getProductType, getPgsConc, partyId) =
             if v <> p.IsChecked then
                 p <- { p with IsChecked = v}
                 x.RaisePropertyChanged "IsChecked"
-                if v then
-                    Chart.addProductSeries
-                        {   PSr.Product = p.Id
-                            PSr.Party = partyId
-                            PSr.Name = p.What}                else 
-                    Chart.removeProductSeries p.Id |> ignore
+                
     member x.SerialNumber
         with get () = p.SerialNumber
         and set v = 
@@ -128,7 +117,6 @@ type Product1(p : P, getProductType, getPgsConc, partyId) =
                 p <- { p with SerialNumber = v }
                 x.RaisePropertyChanged "What"
                 x.RaisePropertyChanged "SerialNumber"
-                Chart.setProductLegend p.Id x.What
                 x.setKef SER_NUMBER  (Some <| decimal v)
 
     member x.ForceCalculateErrors() =        

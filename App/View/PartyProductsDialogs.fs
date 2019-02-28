@@ -100,8 +100,7 @@ let deleteProducts (b:Button) =
     let delete() =  
         getSelectedProducts()
         |> List.iter (fun p -> 
-            party.DeleteProduct p
-            Chart.removeProductSeries p.Product.Id |> ignore )
+            party.DeleteProduct p)
     let dialog, _  =            
         popupDialog
             { Dlg.def() with 
@@ -140,8 +139,7 @@ let createNewParty (b:Button) =
                     |> Option.getWith ProductType.first
                 let b = Alchemy.createNewParty1 (d.Name, prodType, d.Count)
                 party.Party <- b
-                AppContent.save()
-                TabPages.TabChart.update() )
+                AppContent.save() )
     popup1.Closing.Add <| fun e ->
         if MyWinForms.Utils.isPropGridEditing g then
             e.Cancel <- true

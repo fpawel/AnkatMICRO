@@ -3,12 +3,9 @@
 open System
 
 open Thread2
-open Ankat.Alchemy
 open Pneumo
 
 open ViewModel.Operations
-open Logging
-open Utils.Result.Unwrap
 
 [<AutoOpen>]
 module private Helpers = 
@@ -95,10 +92,7 @@ type Ankat.ViewModel.Product1 with
                  | None -> Logging.info "Погрешность не была расчитана" 
                  | Some ve ->
                     (if ve.IsError then Logging.error else Logging.info) "Погрешность: %A" ve
-            
-        
-        
-
+ 
     member p.FixProdData prods = 
         let physVars = 
             prods 
@@ -308,7 +302,7 @@ module private Helpers1 =
     
     let adjustNull() = 
         
-        ("Калибровка нуля шкалы", TimeSpan.FromMinutes 3., AdjustDelay ScaleBeg)  <-|-> fun gettime -> maybeErr{
+        ("Калибровка нуля шкалы", TimeSpan.FromMinutes 5., AdjustDelay ScaleBeg)  <-|-> fun gettime -> maybeErr{
             let pgsConc = party.GetPgs Gas1
             Logging.info  "Калибровка нуля шкалы, %M"  pgsConc
             do! switchPneumo <| Some Gas1
@@ -328,7 +322,7 @@ module private Helpers1 =
         let clapan = ScaleEnd.Clapan n
         let what1 = sprintf "чувствительности канала %d" n.N
         ("Калибровка " + what1, 
-            TimeSpan.FromMinutes 3., AdjustDelay ScaleEnd)  <-|-> fun gettime -> maybeErr{
+            TimeSpan.FromMinutes 5., AdjustDelay ScaleEnd)  <-|-> fun gettime -> maybeErr{
             let pgs = party.GetPgs clapan
             Logging.info  "%s, %M" n.What pgs
             do! switchPneumo <| Some clapan
@@ -341,7 +335,7 @@ module private Helpers1 =
 
     let blowAir() = 
         "Продувка азотом" <||> [   
-            blow 1 Gas1 "Продуть азот"
+            blow 5 Gas1 "Продуть азот"
             "Закрыть пневмоблок" <|> fun () -> switchPneumo None
         ]
 
@@ -354,7 +348,7 @@ module private Helpers1 =
             yield blowAir()]
             
     let norming() = 
-        ("Нормировка", TimeSpan.FromMinutes 1., BlowDelay Gas1) <-|-> fun gettime -> maybeErr{            
+        ("Нормировка", TimeSpan.FromMinutes 5., BlowDelay Gas1) <-|-> fun gettime -> maybeErr{            
             do! switchPneumo <| Some Gas1
             do! Delay.perform "Продуть воздух" gettime true
             do! party.WriteModbus( Sens1.CmdNorm, 100m ) 
@@ -368,7 +362,7 @@ module private Helpers1 =
         "Установка " + strT <||> [
             "Уставка термокамеры " + strT  <|> fun () -> warm temperature
             ("Выдержка термокамеры " + strT, 
-                TimeSpan.FromHours 1., WarmDelay temperature) <-|-> fun gettime -> maybeErr{    
+                TimeSpan.FromHours 2., WarmDelay temperature) <-|-> fun gettime -> maybeErr{    
                 do! switchPneumo None   
                 do! Delay.perform ( "Выдержка термокамеры " + strT ) gettime true } ]
 
@@ -393,7 +387,7 @@ module private Helpers1 =
     let blowAndRead<'a> (clapan_points : (Clapan * ('a list)) list ) (f : 'a -> ProdDataPt) =
         [   for clapan,points in clapan_points do
                 yield Clapan.what clapan <||> [   
-                    blow 3 clapan "Продувка"
+                    blow 5 clapan "Продувка"
                     points  
                         |> List.map f  
                         |> fixProdData    ] ]
@@ -401,7 +395,7 @@ module private Helpers1 =
     let fixSensConcError sensInd temp = 
         (SensorIndex.what sensInd) <||> 
             [   for scalePt in ScalePt.valuesList do 
-                    yield blow 3 (scalePt.Clapan sensInd) ( "Продувка " + (scalePt.Clapan sensInd).What )
+                    yield blow 5 (scalePt.Clapan sensInd) ( "Продувка " + (scalePt.Clapan sensInd).What )
                     yield fixProdData [ Test(sensInd, scalePt, temp) ] 
             ]
 

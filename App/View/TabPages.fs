@@ -112,17 +112,7 @@ module TabsheetVars =
                 page <- x                
                 update()
 
-module TabsheetChart = 
-    
-    let update() =
-        setActivePageTitle <| sprintf "График. %s" Chart.physVar.Dscr 
-        AppContent.updateChartSeriesList ()
-        let m =Chart.axisScalingViewModel
-        m.MaxDateTime <- None
-        m.MinDateTime <- None
-        m.MinY <- None
-        m.MaxY <- None
-    
+   
 module TabsheetErrors =
     
     [<AutoOpen>]
@@ -232,9 +222,6 @@ module private Helpers1 =
             TabsheetErrors.SensorIndex.set Sens1
             TabsheetErrors.update()
         
-        | TabsheetChart ->
-            gridProducts.Parent <- null
-            TabsheetChart.update()
         | _ -> ()
         
 
@@ -254,7 +241,3 @@ let getSelected, setSelected,_ =
             onSelect tabPage
             tabPage.ShowContent() ) 
 
-module TabChart =
-    let update() = 
-        if getSelected() = TabsheetChart then
-            AppContent.updateChartSeriesList ()

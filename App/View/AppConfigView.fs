@@ -86,10 +86,6 @@ type PartyConfigView() =
             party.ProductType <- v
 
             Thread2.scenary.Set <| PartyWorks.production() 
-            match TabPages.getSelected() with
-            | MainWindow.TabsheetChart -> 
-                TabPages.TabChart.update()           
-            | _ -> ()
             Products.updatePhysVarsGridColsVisibility() 
             
     [<DisplayName("Наименование")>]    
