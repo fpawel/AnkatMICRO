@@ -315,16 +315,63 @@ type ProdDataPt =
 
     static member physVars = function
         | LinPt (n,_) -> [n.Conc]
-        | TermoScalePt (n,_,_) -> [n.Termo; n.Var2]
+        | TermoScalePt (Sens1,_,_) -> 
+            [   TppCh0
+                Var1Ch0
+                Var2Ch0
+                Var3Ch0
+                Uw_Ch0 
+                Ur_Ch0 
+                WORK0
+                REF0
+                CCh0
+                CoutCh0]
+        | TermoScalePt (Sens2,_,_) -> 
+            [   TppCh1
+                Var1Ch1
+                Var2Ch1
+                Var3Ch1
+                Uw_Ch1
+                Ur_Ch1 
+                WORK1
+                REF1
+                CCh1
+                CoutCh1]
         | TermoPressPt _ -> [TppCh0;VdatP]
-        | Test (n,_,_) -> [n.Termo; n.Conc]
+        | Test (Sens1,_,_) -> 
+            [   TppCh0
+                Var1Ch0
+                Var2Ch0
+                Var3Ch0
+                Uw_Ch0 
+                Ur_Ch0 
+                WORK0
+                REF0
+                CCh0
+                CoutCh0]
+        | Test (Sens2,_,_) -> 
+            [   TppCh1
+                Var1Ch1
+                Var2Ch1
+                Var3Ch1
+                Uw_Ch1
+                Ur_Ch1 
+                WORK1
+                REF1
+                CCh1
+                CoutCh1]
 
     static member what = function
-        | LinPt (n,m) -> sprintf "LIN%d_%d" (valueOrderOf n) (valueOrderOf m )
-        | TermoScalePt (n,ScaleBeg,t) -> sprintf "T0%d_%d" (valueOrderOf n) (valueOrderOf t )
-        | TermoScalePt (n,ScaleEnd,t) -> sprintf "TK%d_%d" (valueOrderOf n) (valueOrderOf t )
-        | TermoPressPt t -> sprintf "PT%d" (valueOrderOf t )
-        | Test (sensInd,scalePt, termoPt) -> sprintf "Test%d_%d_%d" (valueOrderOf sensInd) (valueOrderOf scalePt) (valueOrderOf termoPt)
+        | LinPt (n,m) -> 
+            sprintf "LIN%d_%d" (valueOrderOf n) (valueOrderOf m )
+        | TermoScalePt (n,ScaleBeg,t) -> 
+            sprintf "T0%d_%d" (valueOrderOf n) (valueOrderOf t )
+        | TermoScalePt (n,ScaleEnd,t) -> 
+            sprintf "TK%d_%d" (valueOrderOf n) (valueOrderOf t )
+        | TermoPressPt t -> 
+            sprintf "PT%d" (valueOrderOf t )
+        | Test (sensInd,scalePt, termoPt) -> 
+            sprintf "Test%d_%d_%d" (valueOrderOf sensInd) (valueOrderOf scalePt) (valueOrderOf termoPt)
         
 
 [<AutoOpen>]

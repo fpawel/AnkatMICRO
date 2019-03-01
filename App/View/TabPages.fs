@@ -88,14 +88,16 @@ module TabsheetVars =
 
         | T (n,gas) -> 
             for t in TermoPt.valuesList do
-                for var in [n.Var2; n.Termo] do
+                for var in ProdDataPt.physVars( TermoScalePt(n, gas, t)) do
                     let pt = TermoScalePt(n,gas,t),var
                     addcol (Prop.dataPoint pt) (var.What + termoLeter t)           
         | PTest n  ->
-            for termoPt in TermoPt.valuesList do
-                for scalePt in ScalePt.valuesList do                
-                    let pt = Test(n, scalePt, termoPt), n.Conc
-                    addcol (Prop.dataPoint pt) (scalePt.What + " " + termoPt.What)
+            for t in TermoPt.valuesList do
+                for gas in ScalePt.valuesList do
+                    let ff = Test(n, gas, t)
+                    for var in ProdDataPt.physVars ff do                    
+                        let pt = ff, var
+                        addcol (Prop.dataPoint pt) (var.What + " " + t.What + " " + gas.What)
 
         | PT ->
             for t in TermoPt.valuesList do
@@ -140,7 +142,6 @@ module TabsheetErrors =
 
         let formatCell (g:DataGridView) (e:DataGridViewCellFormattingEventArgs) ve =  
             let row = g.Rows.[e.RowIndex]
-            let col = g.Columns.[e.ColumnIndex]        
             let cell = row.Cells.[e.ColumnIndex]
             let p = getProductOfRow g e
             let decToStr = Decimal.toStr "0.###"

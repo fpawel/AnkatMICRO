@@ -3,6 +3,7 @@
 open System
 open System.Windows.Forms
 open System.Drawing
+open System.IO
 
 open MainWindow
 open Ankat.ViewModel.Operations
@@ -58,6 +59,17 @@ module private SelectedOperation =
         |> Option.iter(fun x -> 
             LoggingRichText.setLogging loggingJournal x.RunInfo.LoggingRecords )
 
+    let outputToFile() = 
+        get()
+        |> Option.iter(fun x -> 
+            let filename = Path.Combine(Path.ofExe, "log.txt")
+            loggingJournal.Text <- filename
+            use file = new StreamWriter(filename)
+            for (dt,lev,s) in x.RunInfo.LoggingRecords do                 
+                file.WriteLine("{0} {1} {2}", dt, lev, s  )  
+            file.Close()
+            System.Diagnostics.Process.Start("explorer.exe", filename) |> ignore )
+
     
 
     
@@ -99,9 +111,7 @@ let initialize =
     Thread2.scenary.AddChanged <| fun (_,x) -> 
         treeListViewScenary.SetObjects ([x] :> Collections.IEnumerable)
         treeListViewScenary.CheckedObjectsEnumerable <- ([x] :> Collections.IEnumerable)
-
         LoggingRichText.setLogging loggingJournal x.RunInfo.LoggingRecords
-        treeListViewScenary.ExpandAll()
 
     Thread2.scenary.Set (PartyWorks.production())
 
@@ -173,5 +183,10 @@ let initialize =
                         TextAlign = ContentAlignment.MiddleLeft)
     b.Click.AddHandler(fun _ _ ->
         Popup.delayTime().Show b )
+
+
+    treeListViewScenary.DoubleClick.Add( fun _ ->
+        SelectedOperation.outputToFile()
+    )
 
     fun () -> ()

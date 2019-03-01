@@ -177,12 +177,14 @@ type ValueError =
 type Product with
 
     static member concError sensor getPgsConc (sensInd,scalePt,termoPt) product = 
-        Product.getVar (Test(sensInd,scalePt,termoPt), sensInd.Conc) product 
-        |> Option.map(fun conc ->                 
+        match Product.getVar (Test(sensInd,scalePt,termoPt), sensInd.Conc) product with
+        | None -> None
+        | Some conc ->
             let pgs = getPgsConc(scalePt.Clapan sensInd)
             {   Value = conc
                 Nominal = pgs
-                Limit = Sensor.concErrorlimit sensor pgs  }  ) 
+                Limit = Sensor.concErrorlimit sensor pgs  }  
+            |> Some
 
 let createNewProduct serialNumber getPgs productType =
     let prodstate = state {

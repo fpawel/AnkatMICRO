@@ -192,6 +192,7 @@ let treeListViewScenary =
     x.Columns.Add ScenaryColumn.status |> ignore
 
     x.HierarchicalCheckboxes <- true
+    
     x
 
 let gridProducts = 
