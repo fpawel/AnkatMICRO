@@ -461,36 +461,70 @@ module private Helpers1 =
                 yield computeAndWriteGroup <| CorTermoScale (Sens2,ScaleBeg)
                 yield computeAndWriteGroup <| CorTermoScale (Sens2,ScaleEnd)
             yield computeAndWriteGroup <| CorTermoPress
-               ]
-
-
-    
+               ]    
 
     let initCoefs() =         
-        "Установка к-тов исплнения" <|> fun () -> 
+        "Установка к-тов исполнения" <|> fun () -> 
             party.DoForEachProduct (fun p -> 
                 p.WriteKefsInitValues() ) 
             |> Result.someErr
+
+    let workAllCheckedProducts workName work = 
+        workName <|> fun _ ->
+            for p in party.Products do
+                if p.IsChecked && (isKeepRunning()) then 
+                    match work p with 
+                    | Err err -> Logging.error "прибор %d: %s" p.SerialNumber err
+                    | Ok () -> Logging.info "прибор %d: успешно" p.SerialNumber
+            None
+
+    let logProductsVars() = 
+        let vars = [ CoutCh0; TppCh0; Uw_Ch0; Ur_Ch0; WORK0; REF0; 
+            Var1Ch0; Var2Ch0; Var3Ch0; CoutCh1; TppCh1; Uw_Ch1; Ur_Ch1; WORK1;
+            REF1; Var1Ch1; Var2Ch1; Var3Ch1 ]
+        Logging.info "Считывание параметров приборов партии"
+        for p in party.Products do
+            if p.IsChecked && (isKeepRunning()) then 
+                for var in vars do
+                    if isKeepRunning() then 
+                        match p.ReadModbus(ReadVar var) with 
+                        | Ok value ->
+                            Logging.info "прибор %d: рег.%d=%M, %s %s" p.SerialNumber var.Code value var.What var.Dscr
+                        | Err err ->
+                            Logging.info "прибор %d: %s: рег.%d %s %s" p.SerialNumber err var.Code var.What var.Dscr
     
+    let workLogProductsVars() = "Считывание текущих значений параметров приборов" <|> fun () ->
+        logProductsVars()
+        None
+
 let production() = 
    
     (if isSens2() then "2K" else "1K") <||> [
-        setupTermo TermoNorm
-        
-        "Корректировка температуры mcu" <|> fun _ ->
-            party.AdjustMCU 
-                (fun() -> Delay.sleep "Корректировка температуры mcu" (TimeSpan.FromSeconds 30.) ) 
-                (Hardware.Termo.read1 isKeepRunning)
-                isKeepRunning
-            None
 
+        workLogProductsVars()
+        workAllCheckedProducts "Установка К29=273" ( fun p -> p.WriteKef(KdFt, Some 273m) )
+        setupTermo TermoNorm
+        workAllCheckedProducts "Корректировка температуры mcu" ( fun p ->  
+            result {
+                let! k49 = p.ReadModbus(ReadKef KdFt)
+                let! t = Hardware.Termo.read1 isKeepRunning
+                let! tmcu = p.ReadModbus(ReadVar Tmcu)
+                do! p.WriteModbus(WriteKef KFt, k49 + t - tmcu)                 
+            }
+        )     
         "Установка режима работы" <|> fun _ ->
             party.SetWorkMode 2
+        workLogProductsVars()
         initCoefs()
+        workLogProductsVars()
         norming()
+        workLogProductsVars()
         adjust()
+        workLogProductsVars()
         lin()
+        workLogProductsVars()
         termo()
+        workLogProductsVars()
         fixConcError() 
         stopTermo()]
 

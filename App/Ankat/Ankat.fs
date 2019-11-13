@@ -171,6 +171,7 @@ type PhysVar =
     static member dscr = PhysVar.context >> snd 
     member x.Dscr = PhysVar.dscr x
     member x.What = PhysVar.what x
+    member x.Code = PhysVar.code x
 
 
 module private PhysVarHelp = 

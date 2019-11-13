@@ -260,29 +260,5 @@ type Product1(p : P, getProductType, getPgsConc, partyId) =
         | Ok () -> Logging.info "%s, %s" x.What what
         Result.someErr r
 
-    member x.AdjustMCU delay readTemp keepRunning n = 
-        result{        
-            let! k49 = x.ReadModbus(ReadKef KFt)
-            let! t = readTemp
-            let! tmcu = x.ReadModbus(ReadVar Tmcu)
-            do! x.WriteModbus(WriteKef KFt, k49 + t - tmcu)     
-            let _ = 
-                if abs (t - tmcu) > 3m then 
-                    delay()
-                else    
-                    ()
-            return!
-                if abs (t - tmcu) > 3m then 
-                    if n  < 10 then 
-                        if not (keepRunning()) then 
-                            Ok()
-                        else                            
-                            x.AdjustMCU delay readTemp keepRunning n
-                    else 
-                        Err "превышено максимальное количество поыток (10) калибровки температуры"
-                else
-                    Ok() 
-            }
-
     member x.ComputeKefGroup kefGroup = 
         x.Product <- snd <| runState (Alchemy.compute kefGroup getPgsConc (getProductType())) p

@@ -19,7 +19,8 @@ let initKefsValues getPgsConc  prodType =
         yield YEAR, decimal DateTime.Now.Year
         yield KNull_TP_0, 0m
         yield KNull_TP_1, 1m
-        yield KNull_TP_2, 0m
+        yield KNull_TP_2, 0m        
+        
         for n, sensor in chans do
             let pgs0, pgsK, deviceTypeCoef = SensorIndex.prodTypeCoefs n
             yield pgs0, getPgsConc (ScaleEdgePt.clapan (n,ScaleBeg) )
