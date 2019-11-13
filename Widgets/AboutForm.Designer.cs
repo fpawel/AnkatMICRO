@@ -41,6 +41,7 @@
             this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
+            this.linkLabel2 = new System.Windows.Forms.LinkLabel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -178,13 +179,28 @@
             this.label6.TabIndex = 11;
             this.label6.Text = "Анкат-7664МИКРО";
             // 
+            // linkLabel2
+            // 
+            this.linkLabel2.AutoEllipsis = true;
+            this.linkLabel2.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.linkLabel2.LinkArea = new System.Windows.Forms.LinkArea(0, 100);
+            this.linkLabel2.Location = new System.Drawing.Point(223, 433);
+            this.linkLabel2.Name = "linkLabel2";
+            this.linkLabel2.Size = new System.Drawing.Size(535, 29);
+            this.linkLabel2.TabIndex = 12;
+            this.linkLabel2.TabStop = true;
+            this.linkLabel2.Text = "\\\\a\\a\\OGM-SOFT\\АНКАТ-МИКРО\\Цех2";
+            this.linkLabel2.UseCompatibleTextRendering = true;
+            this.linkLabel2.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel2_LinkClicked);
+            // 
             // AboutForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(19F, 41F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            this.ClientSize = new System.Drawing.Size(772, 436);
+            this.ClientSize = new System.Drawing.Size(772, 491);
             this.ControlBox = false;
+            this.Controls.Add(this.linkLabel2);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.linkLabel1);
@@ -226,5 +242,6 @@
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.LinkLabel linkLabel2;
     }
 }
