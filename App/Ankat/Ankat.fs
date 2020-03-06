@@ -224,8 +224,6 @@ type Command =
             CmdCorrectT
             CmdSetAddr ]
 
-
-
 // индекс датчика измерения концентрации
 type SensorIndex with
 
@@ -674,10 +672,13 @@ type Product =
                     conc20 * 0.15m |> abs  |> decimal |> Some
                 | _ -> None
             else
-                temp |> Option.map(fun temp -> 
+                match temp with 
+                | None -> None
+                | Some temp ->                
                     let dt = temp - 20m     
-                    0.5m * abs( sensorConcErrorLimit*dt ) / 10.0m  
-                    )
+                    let value = 0.5m * abs( sensorConcErrorLimit*dt ) / 10.0m  
+                    Some value
+                    
 
 type LoggingRecord = DateTime * Logging.Level * string
 

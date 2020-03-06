@@ -74,6 +74,7 @@ type Ankat.ViewModel.Product1 with
             let xs = AppConfig.config.View.VisiblePhysVars
             if Set.isEmpty xs then [Sens1.Conc] else
             Set.toList xs
+        let _ = x.SetWorkMode 2
         for var in xs do
             let _ = x.ReadModbus( ReadVar var)
             () }
@@ -133,7 +134,7 @@ type Ankat.ViewModel.Party with
     member x.DoForEachProduct (f : Ankat.ViewModel.Product -> string option) = 
         x.DoForEachProduct ( f >> Option.toResult )
 
-    member x.Interrogate() = Option.toResult <| maybeErr {
+    member x.Interrogate() = Option.toResult <| maybeErr {        
         let xs = x.Products |> Seq.filter(fun p -> p.IsChecked)
         if Seq.isEmpty xs then
             return "приборы не отмечены"
@@ -141,10 +142,8 @@ type Ankat.ViewModel.Party with
             let nfop = MainWindow.HardwareInfo.products
             for p in xs do 
                 if isKeepRunning() && p.IsChecked then                         
-                    do! p.Interrogate() 
-
-                    
-                    }
+                    do! p.Interrogate()                    
+        }
 
     member x.WriteModbus(cmd,value) = maybeErr{
         
@@ -310,8 +309,7 @@ module private Helpers1 =
            
             do! party.WriteModbus( cmdAdjust (Sens1,ScaleBeg), pgsConc ) 
             if isSens2() then
-                do! party.WriteModbus( cmdAdjust (Sens2,ScaleBeg), pgsConc ) 
-
+                do! party.WriteModbus( cmdAdjust (Sens2,ScaleBeg), pgsConc )             
             do! Delay.perform 
                     "Выдержка после калибровки нуля шкалы"
                     ( fun () -> TimeSpan.FromSeconds 10.) true
@@ -502,7 +500,7 @@ let production() =
     (if isSens2() then "2K" else "1K") <||> [
 
         workLogProductsVars()
-        workAllCheckedProducts "Установка К29=273" ( fun p -> p.WriteKef(KdFt, Some 273m) )
+        workAllCheckedProducts "Установка К49=273" ( fun p -> p.WriteKef(KdFt, Some 273m) )
         setupTermo TermoNorm
         workAllCheckedProducts "Корректировка температуры mcu" ( fun p ->  
             result {

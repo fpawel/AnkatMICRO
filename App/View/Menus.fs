@@ -70,7 +70,13 @@ let modbusToolsPopup =
                         (sprintf "Введите значение аргумента команды %A" cmd.What)
                         cmd.What
                         String.tryParseDecimal
-                        (fun value -> sendCommand (cmd,value) ) ) ]
+                        (fun value -> sendCommand (cmd,value) ) ) 
+        yield "Отчёт по форме 1", (fun _ popup -> 
+            let _,x = party.Party
+            Ankat.Report.report1 "report1.txt" x.Products
+            popup.Hide() 
+            ) 
+            ]
     |> simpleMenu
 
 let pneumoToolsPopup = 

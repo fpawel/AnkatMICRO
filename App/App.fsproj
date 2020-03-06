@@ -95,6 +95,7 @@
     <Compile Include="AppCore\Hardware.fs" />
     <Compile Include="AppCore\Repository.fs" />
     <Compile Include="AppCore\Alchemy.fs" />
+    <Compile Include="AppCore\Report.fs" />
     <Compile Include="ViewModels\ViewModel.fs" />
     <Compile Include="ViewModels\ProductViewModel1.fs" />
     <Compile Include="ViewModels\ProductViewModel.fs" />

@@ -57,6 +57,9 @@ module Name =
                 
             | Test (Sens n, scalePt, termoPt) -> 
                 sprintf "Test(%s, %A, %A)" n scalePt termoPt
+
+            | TermoPressPt termoPt ->
+                sprintf "TermoPressPt(%A)" termoPt
         
         sprintf "%s, %s" str1 y
 
