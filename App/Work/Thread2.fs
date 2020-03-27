@@ -80,7 +80,7 @@ let scenary =
         let asIEnumerable = [scenary] :> Collections.IEnumerable
         treeListViewScenary.SetObjects asIEnumerable
         treeListViewScenary.CheckedObjectsEnumerable <- asIEnumerable        
-        treeListViewScenary.ExpandAll()
+        //treeListViewScenary.ExpandAll()
         // показать в журнале сообщения, которые относятся к этому сценарию
         LoggingRichText.setLogging MainWindow.loggingJournal scenary.RunInfo.LoggingRecords
     valueRef

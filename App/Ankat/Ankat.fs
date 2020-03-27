@@ -640,19 +640,6 @@ type Product =
             CoefValue = Map.empty 
             SerialPortName = "COM1"}
 
-    static member tryParseSerailMonthYear s =
-        let m = Text.RegularExpressions.Regex.Match(s, @"(\d\d)\s*[\./\s]\s*(\d+)")
-        if not m.Success then None else
-        let y = Int32.Parse m.Groups.[2].Value - 2000
-        let mn = Byte.Parse m.Groups.[1].Value
-        if y >= 16 && mn > 0uy && mn < 13uy then 
-            Some ( mn, byte y )
-        else None
-
-    static member formatSerailMonthYear (m:byte, y:byte) =
-        let sm = if m<10uy then sprintf "0%d" m else m.ToString()
-        sprintf "%s.%d" sm (2000 + int y)
-
     static member concErrorlimit (sensor:Sensor) sensInd scalePt termoPt pgsConc product =
         let concVar = SensorIndex.conc sensInd
         let test = Test(sensInd, scalePt, termoPt)

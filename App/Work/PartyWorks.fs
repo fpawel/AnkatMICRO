@@ -399,14 +399,17 @@ module private Helpers1 =
 
     let fixConcError() = 
         "Снятие погрешности"  <||>
-            [   for temp in [ TermoHigh; TermoLow; TermoNorm;  ] do
+            [   for temp in [ TermoNorm; TermoHigh; TermoLow;   ] do
                     yield temp.What <||>
                         [   yield setupTermo temp
+                            if temp = TermoNorm then
+                                yield adjust()
                             yield fixSensConcError Sens1 temp
                             if isSens2() then
                                 yield fixSensConcError Sens2 temp                
                             yield blowAir()
                         ]
+                yield setupTermo TermoNorm
             ]
 
         
