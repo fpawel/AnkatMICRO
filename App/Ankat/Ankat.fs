@@ -86,12 +86,17 @@ type ScalePt =
             ScaleMid
             ScaleEdge ScaleEnd  ] 
 
-    static member clapan = function
+    static member clapan isCO2 = function
         | n, ScaleEdge pt -> ScaleEdgePt.clapan (n,pt)
-        | Sens1, ScaleMid -> S1Gas2
         | Sens2, ScaleMid -> S2Gas2
+        | Sens1, ScaleMid -> 
+            if isCO2 then
+                S1Gas2CO2
+            else
+                S1Gas2
+        
 
-    member x.Clapan n = ScalePt.clapan (n,x)
+    member x.Clapan isCO2 n = ScalePt.clapan isCO2 (n,x)
 
 type PhysVar =
     | CCh0 
@@ -639,34 +644,7 @@ type Product =
             VarValue = Map.empty 
             CoefValue = Map.empty 
             SerialPortName = "COM1"}
-
-    static member concErrorlimit (sensor:Sensor) sensInd scalePt termoPt pgsConc product =
-        let concVar = SensorIndex.conc sensInd
-        let test = Test(sensInd, scalePt, termoPt)
-        let tempVar = SensorIndex.termo sensInd
-        let temp = Product.getVar (test,tempVar) product
-        let sensorConcErrorLimit = sensor.ConcErrorlimit pgsConc
-
-        match termoPt with 
-        | TermoNorm -> Some sensorConcErrorLimit
-        | _ ->
-            if Sensor.isCH sensor then     
-            
-                let conc20 = Product.getVar (Test(sensInd, scalePt, TermoNorm),concVar) product
-                match scalePt, conc20 with
-                | ScaleEdge ScaleBeg, _ -> Some 5m
-                | _, Some conc20 ->
-                    conc20 * 0.15m |> abs  |> decimal |> Some
-                | _ -> None
-            else
-                match temp with 
-                | None -> None
-                | Some temp ->                
-                    let dt = temp - 20m     
-                    let value = 0.5m * abs( sensorConcErrorLimit*dt ) / 10.0m  
-                    Some value
-                    
-
+       
 type LoggingRecord = DateTime * Logging.Level * string
 
 type PerformingOperation =

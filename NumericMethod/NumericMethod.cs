@@ -76,6 +76,21 @@ namespace NumericMethod
 
     public class LinearAlgebraicEquationsSystem
     {
+        public static decimal[] InterpolateRational4(decimal[] x, decimal[] y)
+        {
+            var matrix = new decimal[4, 5];
+            for (int i = 0; i < 4; i++)
+            {
+                matrix[i, 0] = 1;
+                matrix[i, 1] = x[i];
+                matrix[i, 2] = -1M * x[i] * y[i];
+                matrix[i, 3] = -1M * x[i] * x[i] * y[i];
+                matrix[i, 4] = y[i];
+            }
+            return Solv(4, matrix).Take(4).ToArray();
+
+        }
+
         public static decimal[] Solv(int n, decimal[,] A)
         {
             decimal R;
@@ -89,11 +104,11 @@ namespace NumericMethod
             for (k = 1; k <= n; k++)
             {
                 k1 = k + 1;
-                s = A[k, k];
+                s = A[k - 1, k - 1];
                 j = k;
                 for (i = k + 1; i <= n; i++)
                 {
-                    R = A[i, k];
+                    R = A[i - 1, k - 1];
                     if (Math.Abs(R) > Math.Abs(s))
                     {
                         s = R;
@@ -108,25 +123,24 @@ namespace NumericMethod
                 {
                     for (i = k; i <= n1; i++)
                     {
-                        R = A[k, i];
-                        A[k, i] = A[j, i];
-                        A[j, i] = R;
+                        R = A[k - 1, i - 1];
+                        A[k - 1, i - 1] = A[j - 1, i - 1];
+                        A[j - 1, i - 1] = R;
                     }
                 }
                 for (j = k1; j <= n1; j++)
                 {
-                    A[k, j] = A[k, j] / s;
+                    A[k - 1, j - 1] = A[k - 1, j - 1] / s;
                 }
                 for (i = k1; i <= n; i++)
                 {
-                    R = A[i, k];
+                    R = A[i - 1, k - 1];
                     for (j = k1; j <= n1; j++)
                     {
-                        A[i, j] = A[i, j] - A[k, j] * R;
+                        A[i - 1, j - 1] = A[i - 1, j - 1] - A[k - 1, j - 1] * R;
                     }
                 }
             }
-
 
             if (s == 0)
             {
@@ -137,12 +151,12 @@ namespace NumericMethod
                 var X = new decimal[n + 2];
                 for (i = n; i >= 1; i--)
                 {
-                    s = A[i, n1];
+                    s = A[i - 1, n1 - 1];
                     for (j = i + 1; j <= n; j++)
                     {
-                        s = s - A[i, j] * X[j];
+                        s = s - A[i - 1, j - 1] * X[j - 1];
                     }
-                    X[i] = s;
+                    X[i - 1] = s;
                 }
                 return X;
             }

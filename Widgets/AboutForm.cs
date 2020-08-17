@@ -30,10 +30,10 @@ namespace Widgets
             {
                 Clipboard.SetText(linkLabel1.Text);
                 MessageBox.Show(
-                    "Неудалось открыть ссылку в браузере.\n\n" + 
+                    "Неудалось открыть ссылку в проводнике Windows.\n\n" + 
                     "Текст ссылки скопрированн в буфер обмена.\n\n" + 
                     "Чтобы открыть страницу загрузки последнеей версии ПО, " + 
-                    "вставьте содержимое буера обмена в адресную строку браузера.", 
+                    "вставьте содержимое буера обмена в адресную строку проводника Windows.", 
                     "", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
                 
@@ -42,20 +42,7 @@ namespace Widgets
 
         private void linkLabel2_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            try
-            {
-                System.Diagnostics.Process.Start(linkLabel2.Text);
-            }
-            catch
-            {
-                Clipboard.SetText(linkLabel2.Text);
-                MessageBox.Show(
-                    "Неудалось открыть ссылку в браузере.\n\n" +
-                    "Текст ссылки скопрированн в буфер обмена.\n\n" +
-                    "Чтобы открыть страницу загрузки последнеей версии ПО, " +
-                    "вставьте содержимое буера обмена в адресную строку браузера.",
-                    "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            }
+            
         }
     }
 }

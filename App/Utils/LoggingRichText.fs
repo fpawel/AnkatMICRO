@@ -25,13 +25,18 @@ let setLogging (r:RichTextBox) logging  =
     else
         r.Text <- sprintf "слишком большой текст: %d строк" len
         
-        //let filename = Path.Combine(Path.ofExe, "log.txt")
-        //r.Text <- filename
-        //use file = new StreamWriter(filename)
-        //for (dt,lev,s) in logging do                 
-        //    file.WriteLine("{0} {1} {2}", dt, lev, s  )  
-        //file.Close()
-        //System.Diagnostics.Process.Start("explorer.exe", filename) |> ignore    
+        (*
+        try
+            let filename = Path.Combine(Path.ofExe, "log.txt")
+            r.Text <- filename
+            use file = new StreamWriter(filename)
+            for (dt,lev,s) in logging do                 
+                file.WriteLine("{0} {1} {2}", dt, lev, s  )  
+            file.Close()
+            System.Diagnostics.Process.Start("explorer.exe", filename) |> ignore    
+        with _ ->
+            ()
+        *)
 
 let addRecord r level text = 
     appendLine r (DateTime.Now, level, text  )

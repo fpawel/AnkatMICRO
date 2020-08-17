@@ -13,7 +13,7 @@ module Pneumo =
 
     let private codeToString = function
         | 0uy -> "отключить"
-        | ValueInRange (1uy,4uy) true as code -> sprintf "ПГС%d" code
+        | ValueInRange (1uy,4uy) true as code -> sprintf "код %d" code
         | code -> sprintf "%X" code
 
     let isOpened() = 

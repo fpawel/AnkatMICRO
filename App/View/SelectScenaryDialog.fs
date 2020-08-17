@@ -22,7 +22,7 @@ module private Helpers =
     type Dlg = MyWinForms.PopupDialog.Options
 
 
-let showSelectScenaryDialog : Button -> unit = 
+let showSelectScenaryDialog  (btn : Button) = 
     let panTv = new Panel(Height = 400)
     let buttonRun = new Button( Parent = panTv, Height = 25, Text = "Выполнить", 
                                 TextAlign = ContentAlignment.MiddleLeft,
@@ -90,4 +90,4 @@ let showSelectScenaryDialog : Button -> unit =
             dialog.Close()
             Thread2.run Thread2.NeedStopHardware  op 
         )
-    dialog.Show
+    dialog.Show btn

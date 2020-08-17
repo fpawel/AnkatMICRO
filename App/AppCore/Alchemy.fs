@@ -132,15 +132,23 @@ module private PivateComputeProduct =
                     |> fmtErr TermoPt.what 
                     |> sprintf "при расчёте %s деление на ноль в точке %s" corr.What
                     |> Err )
-
-    let doValuesGaussXY group xy =
+                        
+    let interpolate group xy =
         let groupCoefs = Correction.coefs group
-        let strGroupCoefs = Seq.toStr ", " (Coef.order >> string) groupCoefs
-
+        let strGroupCoefs = Seq.toStr ", " (Coef.order >> string) groupCoefs        
         let x,y = List.toArray xy |> Array.unzip
-        let result =  NumericMethod.GaussInterpolation.calculate(x,y) 
-        let ff = Seq.toStr ", " Decimal.toStr6
-        Logging.info "метод Гаусса"
+        
+        let interpolateFunc =
+            match group with 
+            | CorLin(Sens1) when xy.Length = 4 ->
+                Logging.info "метод RATIONAL"
+                NumericMethod.LinearAlgebraicEquationsSystem.InterpolateRational4
+            | _ -> 
+                Logging.info "метод Гаусса"
+                NumericMethod.GaussInterpolation.calculate
+
+        let result =  interpolateFunc(x,y) 
+        let ff = Seq.toStr ", " Decimal.toStr6        
         Logging.info "X=%s" (ff x)
         Logging.info "Y=%s" (ff y) 
         Logging.info "%s <- %s" strGroupCoefs (ff result)
@@ -158,12 +166,12 @@ let compute group getPgsConc prodType = state {
         |> Product.setKefs 
     let result = 
         getGaussXY product  getPgsConc prodType group
-        |> Result.map (doValuesGaussXY group)
+        |> Result.map (interpolate group)
     match result with
     | Err e -> 
         Logging.error "%s : %s" (Product.what product) e
     | Ok result ->
-        do! result |> List.zipCuty 0m groupCoefs |> Product.setKefs   }
+        do! List.zipCuty 0m groupCoefs result |> Product.setKefs   }
 
 type ValueError = 
     {   Value : decimal
@@ -177,15 +185,18 @@ type ValueError =
 
 type Product with
 
-    static member concError sensor getPgsConc (sensInd,scalePt,termoPt) product = 
-        match Product.getVar (Test(sensInd,scalePt,termoPt), sensInd.Conc) product with
+    static member concError sensor getPgsConc ((sensInd, scalePt : ScalePt,termoPt) as pt) product = 
+        let isCO = Sensor.isCH sensor |> not
+        let pgs = getPgsConc(scalePt.Clapan isCO sensInd)
+        let limit = Sensor.concErrorlimit sensor
+        match Product.getVar (Test pt, sensInd.Conc) product with 
         | None -> None
-        | Some conc ->
-            let pgs = getPgsConc(scalePt.Clapan sensInd)
-            {   Value = conc
-                Nominal = pgs
-                Limit = Sensor.concErrorlimit sensor pgs  }  
-            |> Some
+        | Some conc -> 
+            if termoPt = TermoNorm then    
+                Some { Value = conc; Nominal = pgs; Limit = limit }
+            else
+                Some { Value = conc; Nominal = pgs; Limit = 2M * limit }
+        
 
 let createNewProduct serialNumber getPgs productType =
     let prodstate = state {

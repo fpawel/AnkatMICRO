@@ -14,6 +14,12 @@ module private Helpers =
     let appCfg = AppConfig.config
     let viewCfg = appCfg.View
 
+    let isPartyCO2() = 
+        party.getProductType().Sensor.IsCH |> not
+
+    let getScalePtClapan (scalePt : ScalePt) sensInd = 
+        scalePt.Clapan (isPartyCO2()) sensInd
+
 
 let checkedProducts() = 
     party.Products
@@ -393,7 +399,8 @@ module private Helpers1 =
     let fixSensConcError sensInd temp = 
         (SensorIndex.what sensInd) <||> 
             [   for scalePt in ScalePt.valuesList do 
-                    yield blow 5 (scalePt.Clapan sensInd) ( "Продувка " + (scalePt.Clapan sensInd).What )
+                    yield ( let clapan = getScalePtClapan scalePt sensInd 
+                            in blow 5 clapan ( "Продувка " + clapan.What ) )                                                
                     yield fixProdData [ Test(sensInd, scalePt, temp) ] 
             ]
 

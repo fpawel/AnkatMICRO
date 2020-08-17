@@ -103,12 +103,14 @@ type Sensor =
             2.5m+0.05m*( abs conc) 
         | _  -> 0.5m
     
-    static member concErrorlimit x concValue =        
+    static member concErrorlimit x  =        
         match x with
         | CH4
         | SumCH 
-        | C3H8 ->     2.5m+0.05m * concValue
-        | _ ->   0.2m + 0.05m * concValue
+        | C3H8 -> 5m
+        | CO2_2 -> 0.1m
+        | CO2_5 -> 0.25m
+        | CO2_10 -> 0.5m
 
 type ProductType =   
     {   TypeNumber : int
